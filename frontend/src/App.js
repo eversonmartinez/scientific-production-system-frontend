@@ -6,9 +6,13 @@ import Rodape from './rodape/Rodape';
 import Instituto from './instituto/Instituto';
 // import { Switch } from 'react-router';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import 'bootstrap';
+
+import * as bootstrap from 'bootstrap';
+
+window.bootstrap = bootstrap;
 
 class App extends React.Component{
-  
   render(){
     return (
       <BrowserRouter>

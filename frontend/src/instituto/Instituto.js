@@ -4,35 +4,35 @@ export default class Instituto extends Component {
   render() {
     return (
         <div className='col-12 mt-5 pt-3'>
-            <div class="row">
-            <div class="col-12">
+            <div className="row">
+            <div className="col-12">
                 <h1>Instituto</h1>
             </div>
             </div>
-            <div class="row mt-4 search-bar">
-                <div class="col-10 mx-auto">
+            <div className="row mt-4 search-bar">
+                <div className="col-10 mx-auto">
                     <form>
-                        <table class="table border align-middle table-responsive">
+                        <table className="table border align-middle table-responsive">
                             <thead>
-                                <tr class>
-                                    <th class="w-5 text-center">
-                                        <label for="formSearchInput" class="form-label">Termo:</label>
+                                <tr className>
+                                    <th className="w-5 text-center">
+                                        <label for="formSearchInput" className="form-label">Termo:</label>
                                     </th>
-                                    <th class="w-30">
-                                        <input type="search" class="form-control" id="formSearchInput" placeholder="Instituto X"/>
+                                    <th className="w-30">
+                                        <input type="search" className="form-control" id="formSearchInput" placeholder="Instituto X"/>
                                     </th>
-                                    <th class="w-5 text-center">
-                                        <label for="comboSearch" class="form-label">Campo:</label>
+                                    <th className="w-5 text-center">
+                                        <label for="comboSearch" className="form-label">Campo:</label>
                                     </th>
-                                    <th class="w-20">
-                                        <select class="form-select" arial-label="Default select example">
+                                    <th className="w-20">
+                                        <select className="form-select" arial-label="Default select example">
                                             <option selected>Todos</option>
                                             <option>Nome</option>
                                             <option>Acrônimo</option>
                                         </select>
                                     </th>
-                                    <th class="w-35 text-center">
-                                        <button class="btn btn-primary">Pesquisar</button>
+                                    <th className="w-35 text-center">
+                                        <button className="btn btn-primary">Pesquisar</button>
                                     </th>
                                 </tr>
                             </thead>
@@ -40,48 +40,48 @@ export default class Instituto extends Component {
                     </form>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-9 mx-auto">
-                    <table class="table table-bordered">
-                        <thead class="text-center">
+            <div className="row">
+                <div className="col-9 mx-auto">
+                    <table className="table table-bordered">
+                        <thead className="text-center">
                             <th>Seleção</th>
-                            <th class="w-75">Nome</th>
-                            <th class="w-30">Acrônimo</th>
+                            <th className="w-75">Nome</th>
+                            <th className="w-30">Acrônimo</th>
                             <th>Funções</th>
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="text-center"><input class="form-check-input" value="" type="checkbox"/></td>
+                                <td className="text-center"><input className="form-check-input" value="" type="checkbox"/></td>
                                 <td>Unidade 1</td>
-                                <td class="text-center">XPTO</td>
-                                <td class="text-center">
-                                    <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-primary"><i class="bi bi-trash"></i></button>
+                                <td className="text-center">XPTO</td>
+                                <td className="text-center">
+                                    <button className="btn btn-primary"><i className="bi bi-pencil"></i></button>
+                                    <button className="btn btn-primary"><i className="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-center"><input class="form-check-input" value="" type="checkbox"/></td>
+                                <td className="text-center"><input className="form-check-input" value="" type="checkbox"/></td>
                                 <td>Unidade 2</td>
-                                <td class="text-center">XPTOX</td>
-                                <td class="text-center">
-                                    <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-primary"><i class="bi bi-trash"></i></button>
+                                <td className="text-center">XPTOX</td>
+                                <td className="text-center">
+                                    <button className="btn btn-primary"><i className="bi bi-pencil"></i></button>
+                                    <button className="btn btn-primary"><i className="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                             <tr>
-                                <td class="text-center"><input class="form-check-input" value="" type="checkbox"/></td>
+                                <td className="text-center"><input className="form-check-input" value="" type="checkbox"/></td>
                                 <td>Unidade n</td>
-                                <td class="text-center">XPTON</td>
-                                <td class="text-center">
-                                    <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-primary"><i class="bi bi-trash"></i></button>
+                                <td className="text-center">XPTON</td>
+                                <td className="text-center">
+                                    <button className="btn btn-primary"><i className="bi bi-pencil"></i></button>
+                                    <button className="btn btn-primary"><i className="bi bi-trash"></i></button>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot>
-                            <td colspan="4" class="text-center">
-                                <button class="btn btn-danger">Excluir seleção</button>
-                                <button class="btn btn-success">Adicionar</button>
+                            <td colspan="4" className="text-center">
+                                <button className="btn btn-danger">Excluir seleção</button>
+                                <button className="btn btn-success">Adicionar</button>
                             </td>
                         </tfoot>
                     </table>
