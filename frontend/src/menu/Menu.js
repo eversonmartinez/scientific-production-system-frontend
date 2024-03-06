@@ -5,26 +5,20 @@ import {Collapse} from 'bootstrap'
 export default class Menu extends Component {
   
   closeOffCanvas = () => {
-    const closeOffcanvas = document.getElementById('closeOffcanvas');
-    closeOffcanvas.click()
+    const closeOffCanvas = (document.getElementById('closeOffcanvas')); 
+    if(closeOffCanvas)
+      closeOffCanvas.click();
   }
 
-  markCurrentPageLink = (link) => {
+  markCurrentPageLink = (event) => {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach((l) => l.classList.remove('active'));
-    console.log(link);
-    // link.classList.add('active');
-
-    // for (l in links){
-    //   l.classList.remove('active');
-    // }
-
-    // link.classList.add('active');
+    event.nativeEvent.srcElement.classList.add("active");
   }
 
   changeOfRoute = (event) => {
-    this.markCurrentPageLink(event);
     this.closeOffCanvas();
+    this.markCurrentPageLink(event);
   }
 
   render() {
@@ -45,14 +39,14 @@ export default class Menu extends Component {
                   <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
                     <li className="nav-item">
                       {/* <a class="nav-link active" aria-current="page" href="index.html">Painel Principal</a> */}
-                      <Link to="/" className='nav-link active' onClick={this.changeOfRoute(this)}>Painel Principal</Link>
+                      <Link to="/" className='nav-link active' onClick={this.changeOfRoute}>Painel Principal</Link>
                     </li>
                     <li className="nav-item">
                       <a className="nav-link" href="#">Itens de Produção</a>
                     </li>
                     <li className="nav-item">
                         {/* <a class="nav-link" href="instituto.html">Instituto</a> */}
-                        <Link to="/instituto" className='nav-link' onClick={this.changeOfRoute(this)}>Institutos</Link>
+                        <Link to="/instituto" className='nav-link' onClick={this.changeOfRoute}>Institutos</Link>
                       </li>
                       <li className="nav-item">
                         <a className="nav-link" href="#">Pesquisador</a>
