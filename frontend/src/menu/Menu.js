@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom'
-import {Collapse} from 'bootstrap'
 
 export default class Menu extends Component {
   
@@ -23,17 +22,17 @@ export default class Menu extends Component {
 
   render() {
     return (
-      <nav class="navbar navbar-dark bg-dark fixed-top">
+      <nav className="navbar navbar-dark bg-dark fixed-top">
             <div className="container-fluid">
                 <button className="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
                 {/* <a class="navbar-brand" href="#"><i class="bi bi-house-fill"></i> Home</a> */}
-                <Link to="/" className='navbar-brand'><i class="bi bi-house-fill"></i> Home</Link>
+                <Link to="/" className='navbar-brand'><i className="bi bi-house-fill"></i> Home</Link>
               <div className="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
                 <div className="offcanvas-header">
                   <h5 className="offcanvas-title" id="offcanvasDarkNavbarLabel">Scientific Production System</h5>
-                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" id="closeOffcanvas"></button>
+                  <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" id="closeOffcanvas"></button>
                 </div>
                 <div className="offcanvas-body">
                   <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">

@@ -1,9 +1,10 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import '../styles/Instituto.css';
 
 export default class Instituto extends Component {
   render() {
     return (
-        <div className='col-12 mt-5 pt-3'>
+        <div className='col-12 mt-5 mb-5 pt-3'>
             <div className="row">
             <div className="col-12">
                 <h1>Instituto</h1>
@@ -12,11 +13,11 @@ export default class Instituto extends Component {
             <div className="row mt-4 search-bar">
                 <div className="col-10 mx-auto">
                     <form>
-                        <table className="table border align-middle table-responsive">
+                        <table className="table border align-middle" id="search-table">
                             <thead>
                                 <tr className>
                                     <th className="w-5 text-center">
-                                        <label for="formSearchInput" className="form-label">Termo:</label>
+                                        <label htmlFfor="formSearchInput" className="form-label">Termo:</label>
                                     </th>
                                     <th className="w-30">
                                         <input type="search" className="form-control" id="formSearchInput" placeholder="Instituto X"/>
@@ -25,8 +26,7 @@ export default class Instituto extends Component {
                                         <label for="comboSearch" className="form-label">Campo:</label>
                                     </th>
                                     <th className="w-20">
-                                        <select className="form-select" arial-label="Default select example">
-                                            <option selected>Todos</option>
+                                        <select className="form-select" arial-label="Default select example" defaultValue={'Todos'}>
                                             <option>Nome</option>
                                             <option>Acrônimo</option>
                                         </select>
@@ -42,12 +42,14 @@ export default class Instituto extends Component {
             </div>
             <div className="row">
                 <div className="col-9 mx-auto">
-                    <table className="table table-bordered">
+                    <table className="table table-bordered" id="data-table">
                         <thead className="text-center">
-                            <th>Seleção</th>
-                            <th className="w-75">Nome</th>
-                            <th className="w-30">Acrônimo</th>
-                            <th>Funções</th>
+                            <tr>
+                                <th></th>
+                                <th>Nome</th>
+                                <th>Acrônimo</th>
+                                <th>Funções</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr>
@@ -79,10 +81,12 @@ export default class Instituto extends Component {
                             </tr>
                         </tbody>
                         <tfoot>
-                            <td colspan="4" className="text-center">
-                                <button className="btn btn-danger">Excluir seleção</button>
-                                <button className="btn btn-success">Adicionar</button>
-                            </td>
+                            <tr>
+                                <td colSpan="4" className="text-center p-1">
+                                    <button className="btn btn-danger m-1">Excluir seleção</button>
+                                    <button className="btn btn-success m-1">Adicionar</button>
+                                </td>
+                            </tr>
                         </tfoot>
                     </table>
                 </div>
