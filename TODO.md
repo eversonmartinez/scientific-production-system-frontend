@@ -1,2 +1,1 @@
 Ao clicar fora da barra de navegação a tela está ficando sombreada 
-Seguinte erro ao tentar salvar objeto: 'Requisição cross-origin bloqueada: A diretiva Same Origin (mesma origem) não permite a leitura do recurso remoto em http://localhost:8080/institute (motivo: falta cabeçalho 'Access-Control-Allow-Origin' no CORS). Código de status: 415.'

@@ -2,8 +2,8 @@ import React, {Component} from 'react';
 import './App.css';
 import Menu from "./menu/Menu"
 import Home from './home/Home'
-import Rodape from './rodape/Rodape';
-import Instituto from './instituto/Instituto';
+import Rodape from './footer/Footer';
+import Instituto from './institute/Institute';
 // import { Switch } from 'react-router';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import 'bootstrap';
