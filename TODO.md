@@ -1,0 +1,1 @@
+Ao clicar fora da barra de navegação a tela está ficando sombreada 
