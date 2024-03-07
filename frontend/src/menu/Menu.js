@@ -29,7 +29,7 @@ export default class Menu extends Component {
                 </button>
                 {/* <a class="navbar-brand" href="#"><i class="bi bi-house-fill"></i> Home</a> */}
                 <Link to="/" className='navbar-brand'><i className="bi bi-house-fill"></i> Home</Link>
-              <div className="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+              <div className="offcanvas offcanvas-start text-bg-dark" tabIndex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
                 <div className="offcanvas-header">
                   <h5 className="offcanvas-title" id="offcanvasDarkNavbarLabel">Scientific Production System</h5>
                   <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" id="closeOffcanvas"></button>
