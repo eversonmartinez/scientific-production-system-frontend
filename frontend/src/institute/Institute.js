@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import '../styles/Institute.css';
-import { Modal } from 'bootstrap';
 
 export default class Instituto extends Component {
   
@@ -8,7 +7,9 @@ export default class Instituto extends Component {
 		id: "",
 		name: "",
 		acronym: "",
-		institutes: []
+		institutes: [],
+		including: false,
+		editing: false
 	}
 
 	txtName_change = (event) => {
@@ -20,10 +21,10 @@ export default class Instituto extends Component {
 	}
 
 	fillList = () => {
-		const url = "http://localhost:8080/institute";
+		const url = window.server + "/institute";
 		fetch(url)
 		.then((response) => response.json())
-		.then((data) =>  this.setState({institutes : data}));
+		.then((data) =>  this.setState({institutes : data}))
 	}
 
 	componentDidMount() {
@@ -34,6 +35,15 @@ export default class Instituto extends Component {
 		this.setState({id: ""});
 		this.setState({name: ""});
 		this.setState({acronym: ""});
+	}
+
+	beginInsertion = () => {
+		this.clearState();
+		this.setState({including: true})
+	}
+
+	beginEdit = (institute) => {
+		this.setState({editing: true, id: institute.id, name: institute.name, acronym: institute.acronym})
 	}
 
 	hideAlert = (alertid) => {
@@ -54,34 +64,58 @@ export default class Instituto extends Component {
 	}
 
 	save = () => {
-		const data = {
-			"name": this.state.name,
-			"acronym": this.state.acronym
+		let data;
+
+		let requestOptions;
+
+		if(this.state.including){
+			requestOptions = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			};
+
+			data = {
+				"name": this.state.name,
+				"acronym": this.state.acronym
+			};
+		}
+		else if(this.state.editing){
+			requestOptions = {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			};
+
+			data = {
+				"id": this.state.id,
+				"name": this.state.name,
+				"acronym": this.state.acronym
+			}
 		}
 
-		const requestOptions = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(data)
-		};
-
-		const url = 'http://localhost:8080/institute';
+		const url = window.server + '/institute';
 
 		fetch(url, requestOptions)
-		.then((response) => {
-			if(response.ok){
-				document.getElementById('btnCloseModal').click();
-				this.clearState();
-				this.showAlert('insertion-success-alert');
-				setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
-			}
-			else{
-				response.text().then((text) => this.showAlertWithMessage('insertion-error-alert', text));
-			}
-		})
-		.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
+			.then((response) => {
+				if(response.ok){
+					document.getElementById('btnCloseModal').click();
+					this.clearState();
+					this.showAlert('insertion-success-alert');
+					this.setState({including: false, editing: false});
+					setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
+				}
+				else{
+					response.text().then((text) => this.showAlertWithMessage('insertion-error-alert', text));
+				}
+			})
+				.then()
+					.then(() => this.fillList())
+						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
 
 	render() {
@@ -97,40 +131,41 @@ export default class Instituto extends Component {
 				</div>
 				<div className="row mt-4 search-bar">
 					<div className="col-10 mx-auto">
-							<form>
-									<table className="table border align-middle" id="search-table">
-											<thead>
-													<tr>
-															<th className="w-5 text-center">
-																	<label htmlFor="formSearchInput" className="form-label">Termo:</label>
-															</th>
-															<th className="w-30">
-																	<input type="search" className="form-control" id="formSearchInput" placeholder="Instituto X"/>
-															</th>
-															<th className="w-5 text-center">
-																	<label htmlFor="comboSearch" className="form-label">Campo:</label>
-															</th>
-															<th className="w-20">
-																	<select className="form-select" arial-label="Default select example" defaultValue={'Todos'}>
-																			<option>Nome</option>
-																			<option>Acrônimo</option>
-																	</select>
-															</th>
-															<th className="w-35 text-center">
-																	<button className="btn btn-primary">Pesquisar</button>
-															</th>
-													</tr>
-											</thead>
-										</table>
-								</form>
-						</div>
+						<form>
+							<table className="table border align-middle" id="search-table">
+								<thead>
+										<tr>
+												<th className="w-5 text-center">
+														<label htmlFor="formSearchInput" className="form-label">Termo:</label>
+												</th>
+												<th className="w-30">
+														<input type="search" className="form-control" id="formSearchInput" placeholder="Instituto X"/>
+												</th>
+												<th className="w-5 text-center">
+														<label htmlFor="comboSearch" className="form-label">Campo:</label>
+												</th>
+												<th className="w-20">
+														<select className="form-select" arial-label="Default select example" defaultValue={'Todos'}>
+																<option>Nome</option>
+																<option>Acrônimo</option>
+														</select>
+												</th>
+												<th className="w-35 text-center">
+														<button className="btn btn-primary">Pesquisar</button>
+												</th>
+										</tr>
+								</thead>
+							</table>
+						</form>
+					</div>
 				</div>
 				<div className="row">
 						<div className="col-9 mx-auto">
+							<button type="button" className="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i className="bi bi-plus-circle-dotted fs-6 me-2"></i>Adicionar</button>
 								<table className="table table-bordered table-hover" id="data-table">
 										<thead className="text-center table-dark">
 											<tr>
-													<th scope='col'>#</th>
+													<th scope='col'></th>
 													<th scope='col'>Nome</th>
 													<th scope='col'>Acrônimo</th>
 													<th scope='col'>Funções</th>
@@ -138,26 +173,25 @@ export default class Instituto extends Component {
 										</thead>
 										<tbody className='table-group-divider'>
 											{this.state.institutes && this.state.institutes.map( institute => {
-												return <tr>
+												return <tr key={institute.id}>
 													<td className='text-center'>
 														<input className="form-check-input" value="" type="checkbox"/>
 													</td>
 													<td>{institute.name}</td>
 													<td className="text-center">{institute.acronym}</td>
 													<td className="text-center">
-															<button className="btn btn-primary me-1"><i className="bi bi-pencil"></i></button>
-															<button className="btn btn-primary mw-1"><i className="bi bi-trash"></i></button>
+															<button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(institute)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
+															<button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado"><i className="bi bi-trash"></i></button>
 													</td>
 												</tr>
 											})}
 										</tbody>
 										<tfoot>
-												<tr>
-													<td colSpan="4" className="text-center p-1">
-															<button className="btn btn-danger m-1">Excluir seleção</button>
-															<button type="button" className="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#insertionModal">Adicionar</button>
-													</td>
-												</tr>
+											<tr>
+												<td colSpan="4" className="text-center p-1">
+													<button className="btn btn-danger m-1">Excluir seleção</button>
+												</td>
+											</tr>
 										</tfoot>
 								</table>
 						</div>
@@ -194,7 +228,7 @@ export default class Instituto extends Component {
 								</div>
 								<div className='row mt-2'>
 									<div className='col-11'>
-										<input value={this.state.nome} onChange={this.txtName_change} className='form-control name-pull-image' type='text'></input>
+										<input value={this.state.name} onChange={this.txtName_change} className='form-control name-pull-image' type='text'></input>
 									</div>
 								</div>
 								<div className='row mt-2'>
@@ -204,7 +238,7 @@ export default class Instituto extends Component {
 								</div>
 								<div className='row mt-2'>
 									<div className='col-6'>
-										<input value={this.state.acronimo} onChange={this.txtAcronym_change} className='form-control name-pull-image' type='text'></input>
+										<input value={this.state.acronym} onChange={this.txtAcronym_change} className='form-control name-pull-image' type='text'></input>
 									</div>
 								</div>
 							</div>
@@ -218,4 +252,5 @@ export default class Instituto extends Component {
 			</div>
     )
   }
+
 }
