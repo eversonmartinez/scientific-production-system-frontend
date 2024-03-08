@@ -24,17 +24,21 @@ export default class Instituto extends Component {
 		this.setState({acronym: ""});
 	}
 
+	hideAlert = (alertid) => {
+		document.getElementById(alertid).hidden = true;
+	}
+
 	showAlert = (alertid) => {
 		var alert = document.getElementById(alertid);
 		alert.removeAttribute("hidden");
-		console.log('showalert');
 	}
 
-	showAlert = (alertid, message) => {
+	showAlertWithMessage = (alertid, message) => {
 		var alert = document.getElementById(alertid);
-		alert.querySelector('.alert-message').textContent = message;
-		alert.removeAttribute("hidden");
-		console.log('showalertwmsg');
+		if(alert){
+			alert.querySelector('.alert-message').textContent = message;
+			alert.removeAttribute("hidden");
+		}
 	}
 
 	save = () => {
@@ -59,12 +63,13 @@ export default class Instituto extends Component {
 				document.getElementById('btnCloseModal').click();
 				this.clearState();
 				this.showAlert('insertion-success-alert');
+				setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
 			}
 			else{
-				response.text().then((text) => this.showAlert('insertion-error-alert', text));
+				response.text().then((text) => this.showAlertWithMessage('insertion-error-alert', text));
 			}
 		})
-		.catch(error => this.showAlert('insertion-error-alert', error));
+		.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
 
 	render() {
