@@ -7,7 +7,8 @@ export default class Instituto extends Component {
 	state = {
 		id: "",
 		name: "",
-		acronym: ""
+		acronym: "",
+		institutes: []
 	}
 
 	txtName_change = (event) => {
@@ -16,6 +17,17 @@ export default class Instituto extends Component {
 	
 	txtAcronym_change = (event) => {
 		this.setState({acronym: event.target.value})
+	}
+
+	fillList = () => {
+		const url = "http://localhost:8080/institute";
+		fetch(url)
+		.then((response) => response.json())
+		.then((data) =>  this.setState({institutes : data}));
+	}
+
+	componentDidMount() {
+		this.fillList();
 	}
 
 	clearState = () => {
@@ -88,7 +100,7 @@ export default class Instituto extends Component {
 							<form>
 									<table className="table border align-middle" id="search-table">
 											<thead>
-													<tr className>
+													<tr>
 															<th className="w-5 text-center">
 																	<label htmlFor="formSearchInput" className="form-label">Termo:</label>
 															</th>
@@ -115,43 +127,29 @@ export default class Instituto extends Component {
 				</div>
 				<div className="row">
 						<div className="col-9 mx-auto">
-								<table className="table table-bordered" id="data-table">
-										<thead className="text-center">
+								<table className="table table-bordered table-hover" id="data-table">
+										<thead className="text-center table-dark">
 											<tr>
-													<th></th>
-													<th>Nome</th>
-													<th>Acrônimo</th>
-													<th>Funções</th>
+													<th scope='col'>#</th>
+													<th scope='col'>Nome</th>
+													<th scope='col'>Acrônimo</th>
+													<th scope='col'>Funções</th>
 											</tr>
 										</thead>
-										<tbody>
-												<tr>
-													<td className="text-center"><input className="form-check-input" value="" type="checkbox"/></td>
-													<td>Unidade 1</td>
-													<td className="text-center">XPTO</td>
+										<tbody className='table-group-divider'>
+											{this.state.institutes && this.state.institutes.map( institute => {
+												return <tr>
+													<td className='text-center'>
+														<input className="form-check-input" value="" type="checkbox"/>
+													</td>
+													<td>{institute.name}</td>
+													<td className="text-center">{institute.acronym}</td>
 													<td className="text-center">
-															<button className="btn btn-primary"><i className="bi bi-pencil"></i></button>
-															<button className="btn btn-primary"><i className="bi bi-trash"></i></button>
+															<button className="btn btn-primary me-1"><i className="bi bi-pencil"></i></button>
+															<button className="btn btn-primary mw-1"><i className="bi bi-trash"></i></button>
 													</td>
 												</tr>
-												<tr>
-													<td className="text-center"><input className="form-check-input" value="" type="checkbox"/></td>
-													<td>Unidade 2</td>
-													<td className="text-center">XPTOX</td>
-													<td className="text-center">
-															<button className="btn btn-primary"><i className="bi bi-pencil"></i></button>
-															<button className="btn btn-primary"><i className="bi bi-trash"></i></button>
-													</td>
-												</tr>
-												<tr>
-													<td className="text-center"><input className="form-check-input" value="" type="checkbox"/></td>
-													<td>Unidade n</td>
-													<td className="text-center">XPTON</td>
-													<td className="text-center">
-															<button className="btn btn-primary"><i className="bi bi-pencil"></i></button>
-															<button className="btn btn-primary"><i className="bi bi-trash"></i></button>
-													</td>
-												</tr>
+											})}
 										</tbody>
 										<tfoot>
 												<tr>
