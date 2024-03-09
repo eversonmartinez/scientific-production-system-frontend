@@ -35,6 +35,8 @@ export default class Instituto extends Component {
 		this.setState({id: ""});
 		this.setState({name: ""});
 		this.setState({acronym: ""});
+		this.hideAlert('insertion-success-alert');
+		this.hideAlert('insertion-error-alert');
 	}
 
 	beginInsertion = () => {
@@ -43,6 +45,7 @@ export default class Instituto extends Component {
 	}
 
 	beginEdit = (institute) => {
+		this.clearState();
 		this.setState({editing: true, id: institute.id, name: institute.name, acronym: institute.acronym})
 	}
 
@@ -69,6 +72,11 @@ export default class Instituto extends Component {
 		let requestOptions;
 
 		if(this.state.including){
+			data = {
+				"name": this.state.name,
+				"acronym": this.state.acronym
+			};
+
 			requestOptions = {
 				method: 'POST',
 				headers: {
@@ -77,12 +85,14 @@ export default class Instituto extends Component {
 				body: JSON.stringify(data)
 			};
 
-			data = {
-				"name": this.state.name,
-				"acronym": this.state.acronym
-			};
 		}
 		else if(this.state.editing){
+			data = {
+				"id": this.state.id,
+				"name": this.state.name,
+				"acronym": this.state.acronym
+			}
+
 			requestOptions = {
 				method: 'PUT',
 				headers: {
@@ -91,11 +101,6 @@ export default class Instituto extends Component {
 				body: JSON.stringify(data)
 			};
 
-			data = {
-				"id": this.state.id,
-				"name": this.state.name,
-				"acronym": this.state.acronym
-			}
 		}
 
 		const url = window.server + '/institute';
@@ -126,7 +131,7 @@ export default class Instituto extends Component {
 							<h1>Instituto</h1>
 					</div>
 				</div>
-				<div className="alert alert-success col-2 text-center position-absolute end-0 top-0 mt-5" role="alert" id="insertion-success-alert" hidden>
+				<div className="alert alert-success col-2 text-center position-fixed end-0 top-0 mt-5" role="alert" id="insertion-success-alert" hidden>
 					<i className="bi bi-check2-circle fs-4"></i> Gravado com sucesso!
 				</div>
 				<div className="row mt-4 search-bar">
