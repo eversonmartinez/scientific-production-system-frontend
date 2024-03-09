@@ -123,6 +123,35 @@ export default class Instituto extends Component {
 						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
 
+	delete = (institute) => {
+
+		const requestOptions = {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		};
+		
+		const url = window.server + '/institute/' + institute.id
+
+		fetch(url, requestOptions)
+			.then(() => this.fillList())
+				.catch((error) => console.log(error));
+	}
+	
+	beginDeletion = (institutes) => {
+		/* eslint-disable*/
+		if (Array.isArray(institutes)){
+			if (confirm("Deseja excluir selecionado(s)?"))
+				institutes.forEach((i) => this.delete(i));
+	}
+		else{
+			if (confirm("Deseja realmente excluir?"))
+				this.delete(institutes);
+		}
+		/* eslint-enable*/
+	}
+
 	render() {
     return (    
 			<div className='col-12 mt-5 mb-5 pt-3'>
@@ -186,7 +215,7 @@ export default class Instituto extends Component {
 													<td className="text-center">{institute.acronym}</td>
 													<td className="text-center">
 															<button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(institute)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
-															<button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado"><i className="bi bi-trash"></i></button>
+															<button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(institute)}><i className="bi bi-trash"></i></button>
 													</td>
 												</tr>
 											})}
