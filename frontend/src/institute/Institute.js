@@ -9,7 +9,8 @@ export default class Instituto extends Component {
 		acronym: "",
 		institutes: [],
 		including: false,
-		editing: false
+		editing: false,
+		selectedInstitutesId: []
 	}
 
 	txtName_change = (event) => {
@@ -18,6 +19,34 @@ export default class Instituto extends Component {
 	
 	txtAcronym_change = (event) => {
 		this.setState({acronym: event.target.value})
+	}
+
+	instituteCheckboxChange = (id) => {
+		const selectedIds = this.state.selectedInstitutesId;
+		console.log(this.state.selectedInstitutesId);
+		console.log(selectedIds)
+		console.log(id)
+		
+		if (!selectedIds || selectedIds.length===0){
+			this.setState({selectedInstitutesId : [ id ]});
+			console.log('one')
+		}
+		else if (selectedIds.includes(id)){
+			console.log('2')
+			this.setState({selectedInstitutesId : selectedIds.filter(item => item !== id)});
+		}
+		else{
+			console.log('3')
+			this.setState({selectedInstitutesId : selectedIds.push(id)});
+		}
+		console.log(this.state.selectedInstitutesId);
+	}
+
+	instituteCheckboxChecked = (institute) => {
+		if (this.state.selectedInstitutesId)
+			return this.state.selectedInstitutesId.includes(institute.id);
+		else
+			return false;
 	}
 
 	fillList = () => {
@@ -140,6 +169,7 @@ export default class Instituto extends Component {
 	}
 	
 	beginDeletion = (institutes) => {
+		//Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
 		/* eslint-disable*/
 		if (Array.isArray(institutes)){
 			if (confirm("Deseja excluir selecionado(s)?"))
@@ -209,7 +239,7 @@ export default class Instituto extends Component {
 											{this.state.institutes && this.state.institutes.map( institute => {
 												return <tr key={institute.id}>
 													<td className='text-center'>
-														<input className="form-check-input" value="" type="checkbox"/>
+														<input className="form-check-input"  type="checkbox" checked={this.instituteCheckboxChecked(institute)} onChange={() => this.instituteCheckboxChange(institute.id)}/>
 													</td>
 													<td>{institute.name}</td>
 													<td className="text-center">{institute.acronym}</td>
@@ -223,7 +253,7 @@ export default class Instituto extends Component {
 										<tfoot>
 											<tr>
 												<td colSpan="4" className="text-center p-1">
-													<button className="btn btn-danger m-1">Excluir seleção</button>
+													<button className="btn btn-danger m-1" onClick={() => this.beginDeletion(this.state.selectedInstitutesId)}>Excluir seleção</button>
 												</td>
 											</tr>
 										</tfoot>
