@@ -4,6 +4,7 @@ import Menu from "./menu/Menu"
 import Home from './home/Home'
 import Rodape from './footer/Footer';
 import Instituto from './institute/Institute';
+import Pesquisador from './researcher/Researcher';
 // import { Switch } from 'react-router';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import 'bootstrap';
@@ -23,6 +24,8 @@ class App extends React.Component{
             <Route exact path="/" element={<Home />}>
             </Route>
             <Route path="/instituto" element={<Instituto />}>
+            </Route>
+            <Route path="/pesquisador" element={<Pesquisador />}>
             </Route>
           </Routes>
           <Rodape />
