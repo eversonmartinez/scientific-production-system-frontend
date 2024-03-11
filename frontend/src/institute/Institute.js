@@ -22,24 +22,19 @@ export default class Instituto extends Component {
 	}
 
 	instituteCheckboxChange = (id) => {
-		const selectedIds = this.state.selectedInstitutesId;
-		console.log(this.state.selectedInstitutesId);
-		console.log(selectedIds)
-		console.log(id)
+		const selectedIds = this.state.selectedInstitutesId.slice();
+
 		
 		if (!selectedIds || selectedIds.length===0){
 			this.setState({selectedInstitutesId : [ id ]});
-			console.log('one')
 		}
 		else if (selectedIds.includes(id)){
-			console.log('2')
 			this.setState({selectedInstitutesId : selectedIds.filter(item => item !== id)});
 		}
 		else{
-			console.log('3')
-			this.setState({selectedInstitutesId : selectedIds.push(id)});
+			selectedIds.push(id)
+			this.setState({selectedInstitutesId : selectedIds});
 		}
-		console.log(this.state.selectedInstitutesId);
 	}
 
 	instituteCheckboxChecked = (institute) => {
@@ -144,7 +139,7 @@ export default class Instituto extends Component {
 					setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
 				}
 				else{
-					response.text().then((text) => this.showAlertWithMessage('insertion-error-alert', text));
+					response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
 				}
 			})
 				.then()
@@ -152,7 +147,7 @@ export default class Instituto extends Component {
 						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
 
-	delete = (institute) => {
+	delete = (instituteId) => {
 
 		const requestOptions = {
 			method: 'DELETE',
@@ -161,7 +156,7 @@ export default class Instituto extends Component {
 			}
 		};
 		
-		const url = window.server + '/institute/' + institute.id
+		const url = window.server + '/institute/' + instituteId
 
 		fetch(url, requestOptions)
 			.then(() => this.fillList())
@@ -177,7 +172,7 @@ export default class Instituto extends Component {
 	}
 		else{
 			if (confirm("Deseja realmente excluir?"))
-				this.delete(institutes);
+				this.delete(institutes.id);
 		}
 		/* eslint-enable*/
 	}
@@ -199,24 +194,24 @@ export default class Instituto extends Component {
 							<table className="table border align-middle" id="search-table">
 								<thead>
 										<tr>
-												<th className="w-5 text-center">
-														<label htmlFor="formSearchInput" className="form-label">Termo:</label>
-												</th>
-												<th className="w-30">
-														<input type="search" className="form-control" id="formSearchInput" placeholder="Instituto X"/>
-												</th>
-												<th className="w-5 text-center">
-														<label htmlFor="comboSearch" className="form-label">Campo:</label>
-												</th>
-												<th className="w-20">
-														<select className="form-select" arial-label="Default select example" defaultValue={'Todos'}>
-																<option>Nome</option>
-																<option>Acrônimo</option>
-														</select>
-												</th>
-												<th className="w-35 text-center">
-														<button className="btn btn-primary">Pesquisar</button>
-												</th>
+											<th className="w-5 text-center">
+													<label htmlFor="formSearchInput" className="form-label">Termo:</label>
+											</th>
+											<th className="w-30">
+													<input type="search" className="form-control" id="formSearchInput" placeholder="Instituto X"/>
+											</th>
+											<th className="w-5 text-center">
+													<label htmlFor="comboSearch" className="form-label">Campo:</label>
+											</th>
+											<th className="w-20">
+													<select className="form-select" arial-label="Default select example" defaultValue={'Todos'}>
+															<option>Nome</option>
+															<option>Acrônimo</option>
+													</select>
+											</th>
+											<th className="w-35 text-center">
+													<button className="btn btn-primary">Pesquisar</button>
+											</th>
 										</tr>
 								</thead>
 							</table>
