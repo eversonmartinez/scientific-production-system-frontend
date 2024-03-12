@@ -10,7 +10,11 @@ export default class Instituto extends Component {
 		institutes: [],
 		including: false,
 		editing: false,
-		selectedInstitutesId: []
+		selectedInstitutesId: [],
+		searchTerm: "",
+		field: "name",
+		page: 0,
+		limit: 10
 	}
 
 	txtName_change = (event) => {
@@ -42,6 +46,26 @@ export default class Instituto extends Component {
 			return this.state.selectedInstitutesId.includes(institute.id);
 		else
 			return false;
+	}
+
+	searchComboChange = (event) => {	
+		this.setState({field : event.target.options[event.target.selectedIndex].value});
+	}
+
+	txtSearch_change = (event) => {
+		this.setState({searchTerm: event.target.value})
+	}
+	
+	search = () => {
+		if(this.state.searchTerm){
+			const url = `${window.server}/institute/search?page=${this.state.page}&limit=${this.state.limit}&${this.state.field}=${this.state.searchTerm}`;
+			fetch(url)
+			.then((response) => response.json())
+			.then((data) => this.setState({institutes : data}))
+		}
+		else{
+			this.fillList();
+		}
 	}
 
 	fillList = () => {
@@ -190,7 +214,7 @@ export default class Instituto extends Component {
 				</div>
 				<div className="row mt-4 search-bar">
 					<div className="col-10 mx-auto">
-						<form>
+						
 							<table className="table border align-middle" id="search-table">
 								<thead>
 										<tr>
@@ -198,24 +222,24 @@ export default class Instituto extends Component {
 													<label htmlFor="formSearchInput" className="form-label">Termo:</label>
 											</th>
 											<th className="w-30">
-													<input type="search" className="form-control" id="formSearchInput" placeholder="Instituto X"/>
+													<input type="search" className="form-control" id="cccc" placeholder="Instituto X" value={this.state.searchTerm} onChange={this.txtSearch_change}/>
 											</th>
 											<th className="w-5 text-center">
 													<label htmlFor="comboSearch" className="form-label">Campo:</label>
 											</th>
 											<th className="w-20">
-													<select className="form-select" arial-label="Default select example" defaultValue={'Todos'}>
-															<option>Nome</option>
-															<option>Acrônimo</option>
+													<select className="form-select" arial-label="Combo for search field" defaultValue="name" id="searchCombo" onChange={this.searchComboChange}>
+															<option value="name">Nome</option>
+															<option value="acronym">Acrônimo</option>
 													</select>
 											</th>
 											<th className="w-35 text-center">
-													<button className="btn btn-primary">Pesquisar</button>
+													<button className="btn btn-primary" onClick={this.search}>Pesquisar</button>
 											</th>
 										</tr>
 								</thead>
 							</table>
-						</form>
+						
 					</div>
 				</div>
 				<div className="row">
@@ -231,7 +255,7 @@ export default class Instituto extends Component {
 											</tr>
 										</thead>
 										<tbody className='table-group-divider'>
-											{this.state.institutes && this.state.institutes.map( institute => {
+											{ (this.state.institutes && this.state.institutes.length>0) ? (this.state.institutes.map( institute => {
 												return <tr key={institute.id}>
 													<td className='text-center'>
 														<input className="form-check-input"  type="checkbox" checked={this.instituteCheckboxChecked(institute)} onChange={() => this.instituteCheckboxChange(institute.id)}/>
@@ -243,7 +267,10 @@ export default class Instituto extends Component {
 															<button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(institute)}><i className="bi bi-trash"></i></button>
 													</td>
 												</tr>
-											})}
+											})) : (
+												<tr>
+													<td colSpan="4" className="text-center">Sem itens para exibir</td>
+												</tr>)}
 										</tbody>
 										<tfoot>
 											<tr>
