@@ -14,7 +14,8 @@ export default class Instituto extends Component {
 		searchTerm: "",
 		field: "name",
 		page: 0,
-		limit: 10
+		limit: 10,
+		currentPage: 1
 	}
 
 	txtName_change = (event) => {
@@ -61,6 +62,7 @@ export default class Instituto extends Component {
 			const url = `${window.server}/institute/search?page=${this.state.page}&limit=${this.state.limit}&${this.state.field}=${this.state.searchTerm}`;
 			fetch(url)
 			.then((response) => response.json())
+			.then((json) => json.content)
 			.then((data) => this.setState({institutes : data}))
 		}
 		else{
@@ -73,6 +75,12 @@ export default class Instituto extends Component {
 		fetch(url)
 		.then((response) => response.json())
 		.then((data) =>  this.setState({institutes : data}))
+	}
+	
+	searchWithEnter = (event) => {
+		event.preventDefault();
+		if (event.keyCode === 13) 
+			document.getElementById("searchButton").click();
 	}
 
 	componentDidMount() {
@@ -191,8 +199,11 @@ export default class Instituto extends Component {
 		//Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
 		/* eslint-disable*/
 		if (Array.isArray(institutes)){
-			if (confirm("Deseja excluir selecionado(s)?"))
-				institutes.forEach((i) => this.delete(i));
+			if(institutes.length==0)
+				alert("Nenhum elemento selecionado");
+			else
+				if (confirm("Deseja excluir selecionado(s)?"))
+					institutes.forEach((i) => this.delete(i));
 	}
 		else{
 			if (confirm("Deseja realmente excluir?"))
@@ -200,6 +211,7 @@ export default class Instituto extends Component {
 		}
 		/* eslint-enable*/
 	}
+
 
 	render() {
     return (    
@@ -222,10 +234,10 @@ export default class Instituto extends Component {
 													<label htmlFor="formSearchInput" className="form-label">Termo:</label>
 											</th>
 											<th className="w-30">
-													<input type="search" className="form-control" id="cccc" placeholder="Instituto X" value={this.state.searchTerm} onChange={this.txtSearch_change}/>
+													<input type="search" className="form-control" id="txtSearch" placeholder="Instituto X" value={this.state.searchTerm} onChange={this.txtSearch_change} onKeyUp={this.searchWithEnter}/>
 											</th>
 											<th className="w-5 text-center">
-													<label htmlFor="comboSearch" className="form-label">Campo:</label>
+													<label htmlFor="searchCombo" className="form-label">Campo:</label>
 											</th>
 											<th className="w-20">
 													<select className="form-select" arial-label="Combo for search field" defaultValue="name" id="searchCombo" onChange={this.searchComboChange}>
@@ -234,7 +246,7 @@ export default class Instituto extends Component {
 													</select>
 											</th>
 											<th className="w-35 text-center">
-													<button className="btn btn-primary" onClick={this.search}>Pesquisar</button>
+													<button className="btn btn-primary" onClick={this.search} id="searchButton">Pesquisar</button>
 											</th>
 										</tr>
 								</thead>
@@ -272,14 +284,29 @@ export default class Instituto extends Component {
 													<td colSpan="4" className="text-center">Sem itens para exibir</td>
 												</tr>)}
 										</tbody>
-										<tfoot>
-											<tr>
-												<td colSpan="4" className="text-center p-1">
-													<button className="btn btn-danger m-1" onClick={() => this.beginDeletion(this.state.selectedInstitutesId)}>Excluir seleção</button>
-												</td>
-											</tr>
-										</tfoot>
-								</table>
+										</table>
+												<div className='row'>
+													<div className='col-2'>
+														<label htmlFor="itensQuantityCombo" className="form-label fw-lighter font-small">Itens / página</label>
+														<select className="form-select" arial-label="Combo for itens per page" defaultValue="10" onChange={this.itensQuantityComboChange} id='itensQuantityCombo'>
+																<option value="5">5</option>
+																<option value="10">10</option>
+																<option value="15">15</option>
+																<option value="20">20</option>
+																<option value="25">25</option>
+														</select>
+													</div>
+													<div className='col-8 text-center align-middle'>
+														<button className="btn btn-danger m-1" onClick={() => this.beginDeletion(this.state.selectedInstitutesId)}>Excluir seleção</button>
+													</div>
+													<div className='col-2'>
+														<i className="bi bi-chevron-double-left"></i>
+														<i className="bi bi-chevron-left"></i>
+														{this.state.currentPage}
+														<i className="bi bi-chevron-right"></i>
+														<i className="bi bi-chevron-double-right"></i>
+													</div>
+													</div>
 						</div>
 				</div>
 

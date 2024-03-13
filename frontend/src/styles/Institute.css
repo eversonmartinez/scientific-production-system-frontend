@@ -34,3 +34,11 @@
 #data-table thead tr th:nth-child(4){
     width: 20%;
 }
+
+.font-small{
+    font-size: 0.8rem;
+}
+
+#itensQuantityCombo{
+    width: 5rem;
+}
