@@ -13,9 +13,9 @@ export default class Instituto extends Component {
 		selectedInstitutesId: [],
 		searchTerm: "",
 		field: "name",
-		page: 0,
-		limit: 10,
-		currentPage: 1
+		currentPage: 0,
+		itensPerPage: 20,
+		lastPage: 0
 	}
 
 	txtName_change = (event) => {
@@ -56,31 +56,109 @@ export default class Instituto extends Component {
 	txtSearch_change = (event) => {
 		this.setState({searchTerm: event.target.value})
 	}
+
+	//	Metodo antigo, preenchia a lista com todos os itens existentes no banco
+	// fillList = () => {
+	// 	const url = window.server + "/institute";
+	// 	fetch(url)
+	// 	.then((response) => response.json())
+	// 	.then((data) =>  this.setState({institutes : data}))
+	// }
 	
+	fillList = () => {
+		const url = `${window.server}/institute/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}`;
+		fetch(url)
+		.then((response) => response.json())
+		.then((json) => {
+			this.state.lastPage = Number(json.totalPages) - 1;
+			
+			var data = {
+				institutes : json.content,
+				pageable : json.pageable
+			};
+			return data
+		})
+		.then((data) =>  {
+			this.setState({institutes : data.institutes});
+			this.setState({currentPage: Number(data.pageable.pageNumber)});
+		})
+		.catch(e => {this.clearPagination()})
+	}
+
 	search = () => {
 		if(this.state.searchTerm){
-			const url = `${window.server}/institute/search?page=${this.state.page}&limit=${this.state.limit}&${this.state.field}=${this.state.searchTerm}`;
+			const url = `${window.server}/institute/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&${this.state.field}=${this.state.searchTerm}`;
 			fetch(url)
 			.then((response) => response.json())
-			.then((json) => json.content)
-			.then((data) => this.setState({institutes : data}))
+			.then((json) => {
+				this.state.lastPage = Number(json.totalPages) - 1;
+				
+				var data = {
+					institutes : json.content,
+					pageable : json.pageable
+				};
+				return data
+			})
+			.then((data) =>  {
+				this.setState({institutes : data.institutes});
+				this.setState({currentPage: Number(data.pageable.pageNumber)});
+			})
+			.catch(e => {this.clearPagination()})
+		
 		}
 		else{
 			this.fillList();
 		}
 	}
+	
+	fillOrSearch = () => {
+		if(this.state.searchTerm)
+			this.search();
+		else
+			this.fillList();
+	}
 
-	fillList = () => {
-		const url = window.server + "/institute";
-		fetch(url)
-		.then((response) => response.json())
-		.then((data) =>  this.setState({institutes : data}))
+	searchButtonClicked = () => {
+		this.clearPagination();
+		this.search();
+	}
+
+	//Métodos para navegar entre as páginas da lista exibida
+	goToFirstPage = () => {
+		if(this.state.currentPage != 0){
+			this.state.currentPage = 0;
+			this.fillOrSearch();
+		}
 	}
 	
-	searchWithEnter = (event) => {
+	goToPreviousPage = () => {
+		if(this.state.currentPage > 0){
+			this.state.currentPage--;
+			this.fillOrSearch();
+		}
+
+	}
+
+	goToNextPage = () => {
+		if(this.state.currentPage < this.state.lastPage){
+			this.state.currentPage++;
+			this.fillOrSearch();
+		}
+
+	}
+
+	goToLastPage = () => {
+		if(this.state.currentPage != this.state.lastPage){
+			this.state.currentPage = this.state.lastPage;
+			this.fillOrSearch();
+		}
+	}
+	//Fim
+	
+	clickWithEnter = (event, buttonId) => {
 		event.preventDefault();
 		if (event.keyCode === 13) 
-			document.getElementById("searchButton").click();
+			document.getElementById(buttonId).click();
 	}
 
 	componentDidMount() {
@@ -93,6 +171,17 @@ export default class Instituto extends Component {
 		this.setState({acronym: ""});
 		this.hideAlert('insertion-success-alert');
 		this.hideAlert('insertion-error-alert');
+	}
+
+	clearPagination = () => {
+		this.state.currentPage=0;
+		this.state.lastPage=0;
+		this.state.limit=20;
+	}
+	
+	itensQuantityComboChange = (event) => {
+		this.clearPagination();
+		this.setState({itensPerPage : event.target.options[event.target.selectedIndex].value}, () => this.fillOrSearch());
 	}
 
 	beginInsertion = () => {
@@ -166,6 +255,7 @@ export default class Instituto extends Component {
 				if(response.ok){
 					document.getElementById('btnCloseModal').click();
 					this.clearState();
+					this.clearPagination();
 					this.showAlert('insertion-success-alert');
 					this.setState({including: false, editing: false});
 					setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
@@ -180,7 +270,6 @@ export default class Instituto extends Component {
 	}
 
 	delete = (instituteId) => {
-
 		const requestOptions = {
 			method: 'DELETE',
 			headers: {
@@ -234,7 +323,7 @@ export default class Instituto extends Component {
 													<label htmlFor="formSearchInput" className="form-label">Termo:</label>
 											</th>
 											<th className="w-30">
-													<input type="search" className="form-control" id="txtSearch" placeholder="Instituto X" value={this.state.searchTerm} onChange={this.txtSearch_change} onKeyUp={this.searchWithEnter}/>
+													<input type="search" className="form-control" id="txtSearch" placeholder="Instituto X" value={this.state.searchTerm} onChange={this.txtSearch_change} onKeyUp={(e) => this.clickWithEnter(e, 'searchButton')}/>
 											</th>
 											<th className="w-5 text-center">
 													<label htmlFor="searchCombo" className="form-label">Campo:</label>
@@ -246,7 +335,7 @@ export default class Instituto extends Component {
 													</select>
 											</th>
 											<th className="w-35 text-center">
-													<button className="btn btn-primary" onClick={this.search} id="searchButton">Pesquisar</button>
+													<button className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
 											</th>
 										</tr>
 								</thead>
@@ -287,8 +376,8 @@ export default class Instituto extends Component {
 										</table>
 												<div className='row'>
 													<div className='col-2'>
-														<label htmlFor="itensQuantityCombo" className="form-label fw-lighter font-small">Itens / página</label>
-														<select className="form-select" arial-label="Combo for itens per page" defaultValue="10" onChange={this.itensQuantityComboChange} id='itensQuantityCombo'>
+														<label htmlFor="itensQuantityCombo" className="form-label fw-lighter font-small me-2">Itens / pág.</label>
+														<select className="form-select form-select-sm d-inline" arial-label="Combo for itens per page" value={this.state.itensPerPage} onChange={this.itensQuantityComboChange} id='itensQuantityCombo'>
 																<option value="5">5</option>
 																<option value="10">10</option>
 																<option value="15">15</option>
@@ -296,15 +385,16 @@ export default class Instituto extends Component {
 																<option value="25">25</option>
 														</select>
 													</div>
-													<div className='col-8 text-center align-middle'>
+													<div className='col-7 text-center '>
 														<button className="btn btn-danger m-1" onClick={() => this.beginDeletion(this.state.selectedInstitutesId)}>Excluir seleção</button>
 													</div>
-													<div className='col-2'>
-														<i className="bi bi-chevron-double-left"></i>
-														<i className="bi bi-chevron-left"></i>
-														{this.state.currentPage}
-														<i className="bi bi-chevron-right"></i>
-														<i className="bi bi-chevron-double-right"></i>
+													<div className='col-3 text-end'>
+														<p className='fw-lighter font-small me-2 d-inline'>Pág. atual:</p>
+														<button onClick={this.goToFirstPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-left"></i></button>
+														<button onClick={this.goToPreviousPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-left"></i></button>
+														<p className='d-inline ps-2 pe-2 fs-6 align-middle'>{this.state.currentPage+1}</p>
+														<button onClick={this.goToNextPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-right"></i></button>
+														<button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
 													</div>
 													</div>
 						</div>
@@ -351,13 +441,13 @@ export default class Instituto extends Component {
 								</div>
 								<div className='row mt-2'>
 									<div className='col-6'>
-										<input value={this.state.acronym} onChange={this.txtAcronym_change} className='form-control name-pull-image' type='text'></input>
+										<input value={this.state.acronym} onChange={this.txtAcronym_change} onKeyUp={(e) => this.clickWithEnter(e, 'saveInsertion')} className='form-control name-pull-image' type='text'></input>
 									</div>
 								</div>
 							</div>
 							<div className="modal-footer">
 									<button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-									<button type="button" className="btn btn-primary" onClick={() => this.save()}>Salvar</button>
+									<button type="button" className="btn btn-primary" onClick={() => this.save()} id='saveInsertion'>Salvar</button>
 							</div>
 							</div>
 					</div>
