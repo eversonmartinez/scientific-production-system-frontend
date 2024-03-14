@@ -191,6 +191,7 @@ export default class Instituto extends Component {
 
 	beginEdit = (institute) => {
 		this.clearState();
+		this.setState({creating: false})
 		this.setState({editing: true, id: institute.id, name: institute.name, acronym: institute.acronym})
 	}
 
@@ -215,6 +216,8 @@ export default class Instituto extends Component {
 		let data;
 
 		let requestOptions;
+
+		var url = window.server + '/institute';
 
 		if(this.state.including){
 			data = {
@@ -245,10 +248,8 @@ export default class Instituto extends Component {
 				},
 				body: JSON.stringify(data)
 			};
-
+			url+="/" + data.id;
 		}
-
-		const url = window.server + '/institute';
 
 		fetch(url, requestOptions)
 			.then((response) => {
