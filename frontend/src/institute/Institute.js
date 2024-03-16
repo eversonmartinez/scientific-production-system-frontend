@@ -397,7 +397,7 @@ export default class Instituto extends Component {
 														<button onClick={this.goToNextPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-right"></i></button>
 														<button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
 													</div>
-													</div>
+												</div>
 						</div>
 				</div>
 

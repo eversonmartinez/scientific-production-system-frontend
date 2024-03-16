@@ -1,80 +1,442 @@
 import React, { Component } from 'react';
 
 export default class Pesquisador extends Component {
+  state = {
+    id: "",
+    name: "",
+    email: "",
+    idInstituto: "",
+    institutes: [],
+    including: false,
+    editing: false,
+    selectedResearchersId: [],
+    searchTerm: "",
+		field: "name",
+		currentPage: 0,
+		itensPerPage: 20,
+		lastPage: 0
+  }
+
+  // Função para atualizar o estado do nome
+  txtName_change = (event) => {
+    this.setState({name: event.target.value})
+  }
+
+  // Função para atualizar o estado do email
+  txtEmail_change = (event) => {
+    this.setState({email: event.target.value})
+  }
+
+  // Função para manipular a seleção/deseleção de pesquisadores
+  researcherCheckboxChange = (id) => {
+    // Cria uma cópia do array selectedResearchersId
+    const selectedIds = this.selectedResearchersId.slice();
+
+    // Se o array for vazio ou null, adiciona o id ao array
+    if (!selectedIds || selectedIds.length === 0) {
+      this.setState({selectedResearchersId: [id]});
+    } else if (selectedIds.includes(id)) {
+      // Se o id estiver presente (foi selecionado), remove-o do array
+      this.setState({selectedResearchersId: selectedIds.filter(item => item !== id)});
+    } else {
+      // Se o id não estiver no array, adiciona-o
+      selectedIds.push(id);
+      this.setState({selectedResearchersId: selectedIds})
+    }
+  }
+
+  // Função para verificar se um pesquisador está selecionado
+  researcherCheckboxChecked = (researcher) => {
+    if (this.state.selectedResearchersId) {
+      return this.state.selectedResearchersId.includes(researcher.id);
+    } else {
+      return false;
+    }
+  }
+
+  searchComboChange = (event) => {	
+		this.setState({field : event.target.options[event.target.selectedIndex].value});
+	}
+
+	txtSearch_change = (event) => {
+		this.setState({searchTerm: event.target.value})
+	}
+
+  // Função para preencher a lista de pesquisadores
+	fillList = () => {
+		const url = `${window.server}/researcher/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}`;
+		fetch(url)
+		.then((response) => response.json())
+		.then((json) => {
+			this.state.lastPage = Number(json.totalPages) - 1;
+			
+			var data = {
+				researchers : json.content,
+				pageable : json.pageable
+			};
+			return data
+		})
+		.then((data) =>  {
+			this.setState({researchers : data.researchers});
+			this.setState({currentPage: Number(data.pageable.pageNumber)});
+		})
+		.catch(e => {this.clearPagination()})
+	}
+
+  search = () => {
+		if(this.state.searchTerm){
+			const url = `${window.server}/researcher/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&${this.state.field}=${this.state.searchTerm}`;
+			fetch(url)
+			.then((response) => response.json())
+			.then((json) => {
+				this.state.lastPage = Number(json.totalPages) - 1;
+				
+				var data = {
+					researchers : json.content,
+					pageable : json.pageable
+				};
+				return data
+			})
+			.then((data) =>  {
+				this.setState({researchers : data.researchers});
+				this.setState({currentPage: Number(data.pageable.pageNumber)});
+			})
+			.catch(e => {this.clearPagination()})
+		
+		}
+		else{
+			this.fillList();
+		}
+	}
+
+  fillOrSearch = () => {
+		if(this.state.searchTerm)
+			this.search();
+		else
+			this.fillList();
+	}
+
+	searchButtonClicked = () => {
+		this.clearPagination();
+		this.search();
+	}
+
+  	//Métodos para navegar entre as páginas da lista exibida
+	goToFirstPage = () => {
+		if(this.state.currentPage != 0){
+			this.state.currentPage = 0;
+			this.fillOrSearch();
+		}
+	}
+	
+	goToPreviousPage = () => {
+		if(this.state.currentPage > 0){
+			this.state.currentPage--;
+			this.fillOrSearch();
+		}
+
+	}
+
+  goToNextPage = () => {
+		if(this.state.currentPage < this.state.lastPage){
+			this.state.currentPage++;
+			this.fillOrSearch();
+		}
+
+	}
+
+	goToLastPage = () => {
+		if(this.state.currentPage != this.state.lastPage){
+			this.state.currentPage = this.state.lastPage;
+			this.fillOrSearch();
+		}
+	}
+
+  clickWithEnter = (event, buttonId) => {
+		event.preventDefault();
+		if (event.keyCode === 13) 
+			document.getElementById(buttonId).click();
+	}
+
+	componentDidMount() {
+		this.fillList();
+	}
+
+  // Função para limpar o estado do componente
+  clearState = () => {
+    // Reiniciando os valores dos estados id, name e email
+    this.setState({id: ""});
+    this.setState({name: ""});
+    this.setState({email: ""});
+    this.setState({idInstituto: ""});
+    // Escondendo alertas
+    this.hideAlert('insertion-success-alert');
+    this.hideAlert('insertion-error-alert');
+  }
+
+  clearPagination = () => {
+		this.state.currentPage=0;
+		this.state.lastPage=0;
+		this.state.limit=20;
+	}
+	
+	itensQuantityComboChange = (event) => {
+		this.clearPagination();
+		this.setState({itensPerPage : event.target.options[event.target.selectedIndex].value}, () => this.fillOrSearch());
+	}
+
+  beginInsertion = () => {
+		this.clearState();
+		this.setState({including: true})
+	}
+
+  beginEdit = (researcher) => {
+		this.clearState();
+		this.setState({editing: true, id: researcher.id, name: researcher.name, email: researcher.email})
+	}
+
+  // hideAlert = (alertid) => {
+	// 	document.getElementById(alertid).hidden = true;
+	// }
+
+  hideAlert = (alertid) => {
+    var alertElement = document.getElementById(alertid);
+    if (alertElement) {
+        alertElement.hidden = true;
+    }
+  }
+
+  showAlert = (alertid) => {
+		var alert = document.getElementById(alertid);
+		alert.removeAttribute("hidden");
+	}
+
+  showAlertWithMessage = (alertid, message) => {
+		var alert = document.getElementById(alertid);
+		if(alert){
+			alert.querySelector('.alert-message').textContent = message;
+			
+		}
+	}
+
+  save = () => {
+		let data;
+
+		let requestOptions;
+
+		var url = window.server + '/researcher';
+
+		if(this.state.including){
+			data = {
+				"name": this.state.name,
+				"email": this.state.acronym
+			};
+
+			requestOptions = {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			};
+
+		}
+		else if(this.state.editing){
+			data = {
+				"id": this.state.id,
+				"name": this.state.name,
+				"email": this.state.email
+			}
+
+			requestOptions = {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(data)
+			};
+			url+="/" + data.id;
+		}
+
+		fetch(url, requestOptions)
+			.then((response) => {
+				if(response.ok){
+					document.getElementById('btnCloseModal').click();
+					this.clearState();
+					this.clearPagination();
+					this.showAlert('insertion-success-alert');
+					this.setState({including: false, editing: false});
+					setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
+				}
+				else{
+					response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
+				}
+			})
+				.then()
+					.then(() => this.fillList())
+						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
+	}
+
+	delete = (researcherId) => {
+
+		const requestOptions = {
+			method: 'DELETE',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		};
+		
+		const url = window.server + '/researcher/' + researcherId
+
+		fetch(url, requestOptions)
+			.then(() => this.fillList())
+				.catch((error) => console.log(error));
+	}
+
+  beginDeletion = (researchers) => {
+		//Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
+		/* eslint-disable*/
+		if (Array.isArray(researchers)){
+			if (confirm("Deseja excluir selecionado(s)?"))
+				researchers.forEach((r) => this.delete(r));
+	}
+		else{
+			if (confirm("Deseja realmente excluir?"))
+				this.delete(researchers.id);
+		}
+		/* eslint-enable*/
+	}
+
   render() {
     return (
-    <div className="container mt-5">
-      <h1 className="mb-3">CRUD</h1>
-      <hr />
+      <div className="container mt-5">
+        	<div className="row">
+            <div className="col-12">
+              <br></br>
+                <h1>Pesquisadores</h1>
+            </div>
+				  </div>
+        <hr />
 
-      {/* Retângulo com bordas */}
-      <div className="border rounded p-3 bg-light mb-3">
-        <div className="row">
-          <div className="col-md-6">
-            <label htmlFor="term" className="form-label">Termo</label>
-            <input type="text" className="form-control" id="term" />
+        {/* Retângulo com bordas */}
+        <div className="border rounded p-3 bg-light mb-3">
+          <div className="row">
+            <div className="col-md-6">
+              <label htmlFor="term" className="form-label">Termo</label>
+              <input type="text" className="form-control" id="term" placeholder="Pesquisadores nome"/>
+            </div>
+            <div className="col-md-3">
+              <label htmlFor="order" className="form-label">Campo</label>
+              <select className="form-select" id="order" defaultValue={'Todos'}>
+                <option value="all">Nome</option>
+                <option value="asc">E-mail</option>
+                <option value="desc">Instituto</option>
+              </select>
+            </div>
+            <div className="col-md-3 d-flex align-items-end">
+              <button type="button" className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
+            </div>
           </div>
-          <div className="col-md-3">
-            <label htmlFor="order" className="form-label">Campo</label>
-            <select className="form-select" id="order">
-              <option value="all">Todos</option>
-              <option value="asc">Crescente</option>
-              <option value="desc">Decrescente</option>
+        </div>
+
+        <table className="table bg-dark text-white">
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">E-mail</th>
+              <th scope="col">Instituto</th>
+            </tr>
+          </thead>
+          <tbody className='table-group-divider'>
+              { (this.state.researchers && this.state.researchers.length>0) ? (this.state.researchers.map( researcher => {
+                return <tr key={researcher.id}>
+                  <td className='text-center'>
+                    <input className="form-check-input"  type="checkbox" checked={this.researcherCheckboxChecked(researcher)} onChange={() => this.researcherCheckboxChange(researcher.id)}/>
+                  </td>
+                  <td>{researcher.name}</td>
+                  <td className="text-center">{researcher.email}</td>
+                  <td className="text-center">
+                      <button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(researcher)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
+                      <button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(researcher)}><i className="bi bi-trash"></i></button>
+                  </td>
+                </tr>
+              })) : (
+                <tr>
+                  <td colSpan="4" className="text-center">Sem itens para exibir</td>
+                </tr>)}
+          </tbody>
+        </table>
+
+        <div className='row'>
+          <div className='col-2'>
+            <label htmlFor="itensQuantityCombo" className="form-label fw-lighter font-small me-2">Itens / pág.</label>
+            <select className="form-select form-select-sm d-inline" arial-label="Combo for itens per page" value={this.state.itensPerPage} onChange={this.itensQuantityComboChange} id='itensQuantityCombo'>
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
             </select>
           </div>
-          <div className="col-md-3 d-flex align-items-end">
-            <button type="button" className="btn btn-primary">Buscar</button>
-          </div>
+          <div className='col-3 text-end'>
+              <p className='fw-lighter font-small me-2 d-inline'>Pág. atual:</p>
+              <button onClick={this.goToFirstPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-left"></i></button>
+              <button onClick={this.goToPreviousPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-left"></i></button>
+              <p className='d-inline ps-2 pe-2 fs-6 align-middle'>{this.state.currentPage+1}</p>
+              <button onClick={this.goToNextPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-right"></i></button>
+              <button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
+					</div>
         </div>
-      </div>
 
-      {/* Label Pesquisadores */}
-      <div className="mb-3">
-        <label className="form-label">Pesquisadores</label>
-      </div>
 
-      {/* Caixa cinza clara */}
-      <div className="bg-light p-3 mb-3">
-        <div className="row">
-          <div className="col">
-            <label className="form-label">Nome</label>
+        {/* Botões de incluir e excluir */}
+        <div className="row text-center">
+          <div className="col-md-6">
+            <button type="button" className="btn btn-success w-50"  data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i class="bi bi-file-earmark-plus fs-6 me-2"></i>Incluir</button>
           </div>
-          <div className="col">
-            <label className="form-label">E-mail</label>
-          </div>
-          <div className="col">
-            <label className="form-label">Instituto</label>
+          <div className="col-md-6">
+            <button type="button" className="btn btn-danger w-50" onClick={() => this.beginDeletion(this.state.selectedResearchersId)}>Excluir</button>
           </div>
         </div>
-        {/* Aqui você deve mapear os dados do banco de dados */}
-        {/* Exemplo de mapeamento de dados fictícios */}
-      {/*  {this.props.nomesDoBancoDeDados.map((nome, index) => (
-          <div className="row" key={index}>
-            <div className="col">
-              <p>{nome}</p>
-            </div>
-            
-            <div className="col">
-              <p>E-mail do nome</p>
-            </div>
-            <div className="col">
-              <p>Instituto do nome</p>
-            </div>
-          </div>
-        ))}
-      </div> */}
 
-      {/* Botões de incluir e excluir */}
-      <div className="row text-center">
-        <div className="col-md-6">
-          <button type="button" className="btn btn-success w-50">Incluir</button>
+        {/* <!-- Modal --> */}
+        <div className="modal fade" id="insertionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="insertionModalCenterTitle" aria-hidden="true">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+                  <div className="modal-header">
+                      <h5 className="modal-title fs-5" id="insertionModalTitle">Acrescentar pesquisador</h5>
+                      <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" id='btnCloseModal'></button>
+                  </div>
+                  <div className="modal-body">
+                      <div className="alert alert-danger col-10 text-center mx-auto" role="alert" id="insertion-error-alert" hidden>
+                          <p><i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>Erro ao gravar</p>
+                          <hr/>
+                          <p className='mb-0 alert-message'></p>
+                      </div>
+                      <div className='row mt-2'>
+                          <div className='col-12'>
+                              <label htmlFor="newIdInput" className="form-label">Informe um novo ID:</label>
+                              <input id="newIdInput" value={this.state.newId} onChange={this.handleNewIdChange} className='form-control' type='text' aria-label='Informe um novo ID'></input>
+                          </div>
+                      </div>
+                      <div className='row mt-2'>
+                          <div className='col-12'>
+                              <label htmlFor="instituteSelect" className="form-label">Informe o instituto:</label>
+                              <select id="instituteSelect" className="form-select" aria-label="Selecione um instituto">
+                                  {/* Colocar os institutos aqui dps */}
+                              </select>
+                          </div>
+                      </div>
+                  </div>
+                  <div className="modal-footer">
+                      <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                      <button type="button" className="btn btn-primary" onClick={this.save}>Salvar</button>
+                  </div>
+            </div>
+          </div>
         </div>
-        <div className="col-md-6">
-          <button type="button" className="btn btn-danger w-50">Excluir</button>
-        </div>
+
       </div>
-    </div>
-    </div>
     );
   }
 }
