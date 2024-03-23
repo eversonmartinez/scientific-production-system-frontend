@@ -160,6 +160,7 @@ export default class Pesquisador extends Component {
 
 	componentDidMount() {
 		this.fillList();
+    this.fillInstitutesList();
 	}
 
   // Função para limpar o estado do componente
@@ -307,9 +308,9 @@ export default class Pesquisador extends Component {
 		/* eslint-enable*/
 	}
 
-  requisicaoInstitutos = () => {
+  fillInstitutesList = () => {
     // Fazer a requisição para o endpoint de institutos
-    fetch('https://researcher')
+    fetch(window.server + '/institute')
       .then((response) => response.json())
       .then((data) => {
         this.setState({ institutes: data }); // Atualiza o estado com os dados dos institutos
@@ -406,7 +407,7 @@ export default class Pesquisador extends Component {
         {/* Botões de incluir e excluir */}
         <div className="row text-center">
           <div className="col-md-6">
-            <button type="button" className="btn btn-success w-50"  data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i class="bi bi-file-earmark-plus fs-6 me-2"></i>Incluir</button>
+            <button type="button" className="btn btn-success w-50"  data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i className="bi bi-file-earmark-plus fs-6 me-2"></i>Incluir</button>
           </div>
           <div className="col-md-6">
             <button type="button" className="btn btn-danger w-50" onClick={() => this.beginDeletion(this.state.selectedResearchersId)}>Excluir</button>
@@ -435,23 +436,28 @@ export default class Pesquisador extends Component {
                       </div>
                       <div className='row mt-2'>
                           <div className='col-12'>
-                              <label htmlFor="instituteSelect" className="form-label">Informe o instituto:</label>
-                              <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
-                                {this.state.institutes.map((institute) => (
-                                <div className="form-check" key={institute.id}>
-                                  <input
-                                    type="checkbox"
-                                    className="form-check-input"
-                                    id={`checkboxInstitute${institute.id}`}
-                                    value={institute.id}
-                                    onChange={() => this.instituteCheckboxChange(institute.id)}
-                                  />
-                                  <label className="form-check-label" htmlFor={`checkboxInstitute${institute.id}`}>
-                                    {institute.name}
-                                  </label>
-                                </div>
-                                ))}
-                              </div>
+                              <p className="form-label">Informe o instituto:</p>
+                              <table className='table'>
+                                <tbody>
+                                  { (this.state.institutes && this.state.institutes.length>0) ? (this.state.institutes.map((institute) => {
+                                    return <tr key={institute.id}>
+                                      <td>{institute.name}</td>
+                                      <td>
+                                          <input
+                                            type="checkbox"
+                                            className="form-check-input"
+                                            id={`checkboxInstitute${institute.id}`}
+                                            value={institute.id}
+                                            onChange={() => this.instituteCheckboxChange(institute.id)}
+                                          />
+                                      </td>
+                                    </tr>
+                                  })) : (
+                                    <tr>
+                                      <td colSpan="4" className="text-center">Sem itens para exibir</td>
+                                    </tr>)}
+                                </tbody>
+                              </table>
                           </div>
                       </div>
                   </div>
