@@ -307,6 +307,19 @@ export default class Pesquisador extends Component {
 		/* eslint-enable*/
 	}
 
+  requisicaoInstitutos = () => {
+    // Fazer a requisição para o endpoint de institutos
+    fetch('https://researcher')
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ institutes: data }); // Atualiza o estado com os dados dos institutos
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar institutos:', error);
+      });
+  };
+
+
   render() {
     return (
       <div className="container mt-5">
@@ -355,6 +368,7 @@ export default class Pesquisador extends Component {
                   </td>
                   <td>{researcher.name}</td>
                   <td className="text-center">{researcher.email}</td>
+                  <td className="test-center">{researcher.institute}</td>
                   <td className="text-center">
                       <button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(researcher)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
                       <button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(researcher)}><i className="bi bi-trash"></i></button>
@@ -422,9 +436,22 @@ export default class Pesquisador extends Component {
                       <div className='row mt-2'>
                           <div className='col-12'>
                               <label htmlFor="instituteSelect" className="form-label">Informe o instituto:</label>
-                              <select id="instituteSelect" className="form-select" aria-label="Selecione um instituto">
-                                  {/* Colocar os institutos aqui dps */}
-                              </select>
+                              <div style={{ maxHeight: '200px', overflowY: 'scroll' }}>
+                                {this.state.institutes.map((institute) => (
+                                <div className="form-check" key={institute.id}>
+                                  <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id={`checkboxInstitute${institute.id}`}
+                                    value={institute.id}
+                                    onChange={() => this.instituteCheckboxChange(institute.id)}
+                                  />
+                                  <label className="form-check-label" htmlFor={`checkboxInstitute${institute.id}`}>
+                                    {institute.name}
+                                  </label>
+                                </div>
+                                ))}
+                              </div>
                           </div>
                       </div>
                   </div>
