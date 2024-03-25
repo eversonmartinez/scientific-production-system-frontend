@@ -48,7 +48,7 @@ export default class Menu extends Component {
                         <Link to="/instituto" className='nav-link' onClick={this.changeOfRoute} id="linkToInstitute">Institutos</Link>
                       </li>
                       <li className="nav-item">
-                      <Link to="/pesquisador" className='nav-link' onClick={this.changeOfRoute} id="linkToHome">Pesquisador</Link>
+                      <Link to="/pesquisador" className='nav-link' onClick={this.changeOfRoute} id="linkToResarcher">Pesquisador</Link>
                       </li>
                       <li className="nav-item">
                         <a className="nav-link" href="#">Gerador de grafo</a>

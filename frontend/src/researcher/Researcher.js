@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import '../styles/Researcher.css';
 
 export default class Pesquisador extends Component {
   state = {
@@ -6,6 +7,8 @@ export default class Pesquisador extends Component {
     name: "",
     email: "",
     idInstituto: "",
+    selectedInstituteId: '',
+    selectedInstituteName: '',
     institutes: [],
     including: false,
     editing: false,
@@ -14,7 +17,8 @@ export default class Pesquisador extends Component {
 		field: "name",
 		currentPage: 0,
 		itensPerPage: 20,
-		lastPage: 0
+		lastPage: 0,
+    instituteSearchTerm: ''
   }
 
   // Função para atualizar o estado do nome
@@ -54,12 +58,20 @@ export default class Pesquisador extends Component {
     }
   }
 
+  instituteCheckboxChange = (institute) => {
+    this.setState({selectedInstituteId: institute.id, selectedInstituteName: institute.name});
+  }
+
   searchComboChange = (event) => {	
 		this.setState({field : event.target.options[event.target.selectedIndex].value});
 	}
 
 	txtSearch_change = (event) => {
 		this.setState({searchTerm: event.target.value})
+	}
+
+  txtInstituteSearch_change = (event) => {
+		this.setState({instituteSearchTerm: event.target.value})
 	}
 
   // Função para preencher a lista de pesquisadores
@@ -109,6 +121,23 @@ export default class Pesquisador extends Component {
 		}
 	}
 
+  instituteSearch = () => {
+		if(this.state.instituteSearchTerm){
+			const url = `${window.server}/institute/search?page=0&limit=15&field=name&term=${this.state.instituteSearchTerm}`;
+			fetch(url)
+			.then((response) => response.json())
+			.then((json) => json.content)
+			.then((data) =>  {
+				this.setState({institutes : data});
+			})
+			.catch(e => {console.log(e)})
+		
+		}
+		else{
+			this.fillInstitutesList();
+		}
+	}
+
   fillOrSearch = () => {
 		if(this.state.searchTerm)
 			this.search();
@@ -119,6 +148,11 @@ export default class Pesquisador extends Component {
 	searchButtonClicked = () => {
 		this.clearPagination();
 		this.search();
+	}
+
+  searchInstituteButtonClicked = () => {
+		this.clearPagination();
+		this.instituteSearch();
 	}
 
   	//Métodos para navegar entre as páginas da lista exibida
@@ -166,10 +200,7 @@ export default class Pesquisador extends Component {
   // Função para limpar o estado do componente
   clearState = () => {
     // Reiniciando os valores dos estados id, name e email
-    this.setState({id: ""});
-    this.setState({name: ""});
-    this.setState({email: ""});
-    this.setState({idInstituto: ""});
+    this.setState({id: '', name: '', email: '', idInstituto:'', selectedInstituteId: '', selectedInstituteName:''});
     // Escondendo alertas
     this.hideAlert('insertion-success-alert');
     this.hideAlert('insertion-error-alert');
@@ -220,62 +251,103 @@ export default class Pesquisador extends Component {
 		}
 	}
 
-  save = () => {
-		let data;
+  toggleList = () => {
+    var list = document.getElementById('tableInstitutes');
+    var icon = document.getElementById('showListButton');
 
-		let requestOptions;
+    if(list.hidden){
+      list.hidden = false;
+      icon.classList.remove('bi-caret-down-square');
+      icon.classList.add('bi-caret-up-square');
+    }
+    else{
+      list.hidden = true;
+      icon.classList.remove('bi-caret-up-square');
+      icon.classList.add('bi-caret-down-square');
+    }
+  }
+
+  save = () => {
+		let data = {
+      "id": this.state.id,
+      "institute_id": this.state.selectedInstituteId
+    };
+
+		let requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    };
 
 		var url = window.server + '/researcher';
 
-		if(this.state.including){
-			data = {
-				"name": this.state.name,
-				"email": this.state.acronym
-			};
+		//if(this.state.including){}
 
-			requestOptions = {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data)
-			};
+    /*Precisei comentar o modelo de edição para criar o novo método de salvar, utlizando o formato que Gurgel criou. Após isso será neessário reestruturar esse método*/
+		// else if(this.state.editing){
+		// 	data = {
+		// 		"id": this.state.id,
+		// 		"name": this.state.name,
+		// 		"email": this.state.email
+		// 	}
+      
+		// 	requestOptions = {
+		// 		method: 'PUT',
+		// 		headers: {
+		// 			'Content-Type': 'application/json'
+		// 		},
+		// 		body: JSON.stringify(data)
+		// 	};
+		// 	url+="/" + data.id;
+		// }
 
-		}
-		else if(this.state.editing){
-			data = {
-				"id": this.state.id,
-				"name": this.state.name,
-				"email": this.state.email
-			}
-
-			requestOptions = {
-				method: 'PUT',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(data)
-			};
-			url+="/" + data.id;
-		}
-
-		fetch(url, requestOptions)
-			.then((response) => {
-				if(response.ok){
-					document.getElementById('btnCloseModal').click();
-					this.clearState();
-					this.clearPagination();
-					this.showAlert('insertion-success-alert');
-					this.setState({including: false, editing: false});
-					setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
-				}
-				else{
-					response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
-				}
-			})
-				.then()
-					.then(() => this.fillList())
-						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
+		fetch(url+'/curriculum', requestOptions)
+			.then((response) => response.json())
+      .then((data) => {
+        //Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
+		    /* eslint-disable*/
+        if(confirm("Deseja mesmo incluir o Lattes " + data.id + " de " + data.name + " na " + data.institute.name + "?")){
+          if(this.state.including){
+            requestOptions.method = 'POST';
+            requestOptions.body = JSON.stringify(data);
+          }
+          fetch(url, requestOptions)
+          .then((response) => {
+            if(response.ok){
+              document.getElementById('btnCloseModal').click();
+              this.clearState();
+              this.clearPagination();
+              this.showAlert('insertion-success-alert');
+              this.setState({including: false, editing: false});
+              setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
+            }
+            else{
+              response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
+            }
+          })
+        }
+        /*eslint-enable*/
+      })
+      
+      
+  //     {
+	// 			if(response.ok){
+	// 				document.getElementById('btnCloseModal').click();
+	// 				this.clearState();
+	// 				this.clearPagination();
+	// 				this.showAlert('insertion-success-alert');
+	// 				this.setState({including: false, editing: false});
+	// 				setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
+	// 			}
+	// 			else{
+	// 				response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
+	// 			}
+	// 		})
+	// 			.then()
+	// 				.then(() => this.fillList())
+	// 					.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
 
 	delete = (researcherId) => {
@@ -423,43 +495,70 @@ export default class Pesquisador extends Component {
                       <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" id='btnCloseModal'></button>
                   </div>
                   <div className="modal-body">
-                      <div className="alert alert-danger col-10 text-center mx-auto" role="alert" id="insertion-error-alert" hidden>
-                          <p><i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>Erro ao gravar</p>
-                          <hr/>
-                          <p className='mb-0 alert-message'></p>
-                      </div>
-                      <div className='row mt-2'>
-                          <div className='col-12'>
-                              <label htmlFor="newIdInput" className="form-label">Informe um novo ID:</label>
-                              <input id="newIdInput" value={this.state.newId} onChange={this.handleNewIdChange} className='form-control' type='text' aria-label='Informe um novo ID'></input>
+                    <div className="alert alert-danger col-10 text-center mx-auto" role="alert" id="insertion-error-alert" hidden>
+                        <p><i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>Erro ao gravar</p>
+                        <hr/>
+                        <p className='mb-0 alert-message'></p>
+                    </div>
+                    <div className='row mt-2'>
+                        <div className='col-12'>
+                            <label htmlFor="newIdInput" className="form-label">Informe um novo ID:</label>
+                            <input id="newIdInput" value={this.state.newId} onChange={this.handleNewIdChange} className='form-control' type='text' aria-label='Informe um novo ID'></input>
+                        </div>
+                    </div>
+                    <div className='row mt-2'>
+                        <div className='col-12'>
+                            <p className="form-label">Informe o instituto:</p>
                           </div>
                       </div>
-                      <div className='row mt-2'>
-                          <div className='col-12'>
-                              <p className="form-label">Informe o instituto:</p>
-                              <table className='table'>
-                                <tbody>
-                                  { (this.state.institutes && this.state.institutes.length>0) ? (this.state.institutes.map((institute) => {
-                                    return <tr key={institute.id}>
-                                      <td>{institute.name}</td>
-                                      <td>
-                                          <input
-                                            type="checkbox"
-                                            className="form-check-input"
-                                            id={`checkboxInstitute${institute.id}`}
-                                            value={institute.id}
-                                            onChange={() => this.instituteCheckboxChange(institute.id)}
-                                          />
-                                      </td>
-                                    </tr>
-                                  })) : (
-                                    <tr>
-                                      <td colSpan="4" className="text-center">Sem itens para exibir</td>
-                                    </tr>)}
-                                </tbody>
-                              </table>
-                          </div>
+                            {/* <div className='border'> */}
+                    <div className='row ms-1 me-1 border'>
+                      <div className='col-11 pt-2' >
+                        <p className=''>{this.state.selectedInstituteName}</p>
                       </div>
+                      <div className='col-1 text-start'>
+                        <button className='btn btn-light fs-4 p-0 m-0' onClick={this.toggleList}><i id="showListButton" className="bi bi-caret-down-square"></i></button>
+                      </div>
+                      <div className='col-12'>
+                        <div id='tableInstitutes' className='table-wrapper-scroll-y' hidden>
+                          <table className='table'>
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <input type="search" className="form-control" id="txtInstituteSearch" placeholder="pesquisar" value={this.state.instituteSearchTerm} onChange={this.txtInstituteSearch_change} />
+                                </td>
+                                <td>
+                                  <button className="btn btn-light" onClick={this.searchInstituteButtonClicked} id="searchInstituteButton"><i className="bi bi-search"></i></button>
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                          <table className='table table-hover table-sm table-responsive'>
+                            <tbody>
+                              { (this.state.institutes && this.state.institutes.length>0) ? (this.state.institutes.map((institute) => {
+                                return <tr key={institute.id}>
+                                  <td>{institute.name}</td>
+                                  <td>
+                                      <input
+                                        type="checkbox"
+                                        className="form-check-input"
+                                        id={`checkboxInstitute${institute.id}`}
+                                        value={institute.id}
+                                        onChange={() => this.instituteCheckboxChange(institute)}
+                                        checked={institute.id === this.state.selectedInstituteId}
+                                      />
+                                  </td>
+                                </tr>
+                              })) : (
+                                <tr>
+                                  <td colSpan="4" className="text-center">Sem itens para exibir</td>
+                                </tr>)}
+                            </tbody>
+                          </table>
+                          {/* </div> */}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div className="modal-footer">
                       <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -468,7 +567,6 @@ export default class Pesquisador extends Component {
             </div>
           </div>
         </div>
-
       </div>
     );
   }

@@ -196,7 +196,9 @@ export default class Instituto extends Component {
 	}
 
 	hideAlert = (alertid) => {
-		document.getElementById(alertid).hidden = true;
+		alert = document.getElementById(alertid);
+		if(alert)
+			alert.hidden = true;	
 	}
 
 	showAlert = (alertid) => {
@@ -336,7 +338,7 @@ export default class Instituto extends Component {
 													</select>
 											</th>
 											<th className="w-35 text-center">
-													<button className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
+												<button className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
 											</th>
 										</tr>
 								</thead>
