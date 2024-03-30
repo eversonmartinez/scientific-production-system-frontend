@@ -21,6 +21,10 @@ export default class Pesquisador extends Component {
     instituteSearchTerm: ''
   }
 
+  txtId_change = (event) => {
+    this.setState({id: event.target.value})
+  }
+  
   // Função para atualizar o estado do nome
   txtName_change = (event) => {
     this.setState({name: event.target.value})
@@ -157,7 +161,7 @@ export default class Pesquisador extends Component {
 
   	//Métodos para navegar entre as páginas da lista exibida
 	goToFirstPage = () => {
-		if(this.state.currentPage != 0){
+		if(this.state.currentPage !== 0){
 			this.state.currentPage = 0;
 			this.fillOrSearch();
 		}
@@ -180,7 +184,7 @@ export default class Pesquisador extends Component {
 	}
 
 	goToLastPage = () => {
-		if(this.state.currentPage != this.state.lastPage){
+		if(this.state.currentPage !== this.state.lastPage){
 			this.state.currentPage = this.state.lastPage;
 			this.fillOrSearch();
 		}
@@ -268,20 +272,13 @@ export default class Pesquisador extends Component {
   }
 
   save = () => {
-		let data = {
-      "id": this.state.id,
-      "institute_id": this.state.selectedInstituteId
-    };
-
-		let requestOptions = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    };
+		// let data = {
+    //   "id": this.state.id,
+    //   "institute_id": this.state.selectedInstituteId
+    // };
 
 		var url = window.server + '/researcher';
+    let requestOptions;
 
 		//if(this.state.including){}
 
@@ -293,33 +290,48 @@ export default class Pesquisador extends Component {
 		// 		"email": this.state.email
 		// 	}
       
-		// 	requestOptions = {
-		// 		method: 'PUT',
-		// 		headers: {
-		// 			'Content-Type': 'application/json'
-		// 		},
-		// 		body: JSON.stringify(data)
-		// 	};
+			// requestOptions = {
+			// 	method: 'PUT',
+			// 	headers: {
+			// 		'Content-Type': 'application/json'
+			// 	},
+			// 	body: JSON.stringify(data)
+			// };
 		// 	url+="/" + data.id;
 		// }
 
-		fetch(url+'/curriculum', requestOptions)
+		fetch(url+'/curriculum/'+this.state.id)
 			.then((response) => response.json())
-      .then((data) => {
+      .then((responseData) => {
         //Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
-		    /* eslint-disable*/
-        if(confirm("Deseja mesmo incluir o Lattes " + data.id + " de " + data.name + " na " + data.institute.name + "?")){
+		    /* eslint-disable */
+        if(confirm("Deseja mesmo incluir o Lattes " + responseData.id + " de " + responseData.name + " na " + this.state.selectedInstituteName  + "?")){
+        /* eslint-enable */
           if(this.state.including){
-            requestOptions.method = 'POST';
-            requestOptions.body = JSON.stringify(data);
+            var selectedInstitute = this.state.institutes.find((i) => i.id === this.state.selectedInstituteId);
+            
+            let data = {
+              		"id": responseData.id,
+              		"name": responseData.name,
+              		"email": responseData.email,
+                  "institute": selectedInstitute
+            };
+            requestOptions = {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            };
           }
+
           fetch(url, requestOptions)
           .then((response) => {
             if(response.ok){
               document.getElementById('btnCloseModal').click();
               this.clearState();
               this.clearPagination();
-              this.showAlert('insertion-success-alert');
+              //this.showAlert('insertion-success-alert');
               this.setState({including: false, editing: false});
               setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
             }
@@ -327,8 +339,9 @@ export default class Pesquisador extends Component {
               response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
             }
           })
+          .then(() => this.fillList())
+						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
         }
-        /*eslint-enable*/
       })
       
       
@@ -349,6 +362,7 @@ export default class Pesquisador extends Component {
 	// 				.then(() => this.fillList())
 	// 					.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
+
 
 	delete = (researcherId) => {
 
@@ -425,12 +439,14 @@ export default class Pesquisador extends Component {
           </div>
         </div>
 
-        <table className="table bg-dark text-white">
+        <table className="table text-white">
           <thead>
-            <tr>
+            <tr  className="text-center table-dark">
+              <th scope='col'></th>
               <th scope="col">Nome</th>
               <th scope="col">E-mail</th>
               <th scope="col">Instituto</th>
+              <th scope='col'>Funções</th>
             </tr>
           </thead>
           <tbody className='table-group-divider'>
@@ -441,7 +457,7 @@ export default class Pesquisador extends Component {
                   </td>
                   <td>{researcher.name}</td>
                   <td className="text-center">{researcher.email}</td>
-                  <td className="test-center">{researcher.institute}</td>
+                  <td className="test-center">{researcher.institute.name}</td>
                   <td className="text-center">
                       <button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(researcher)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
                       <button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(researcher)}><i className="bi bi-trash"></i></button>
@@ -503,7 +519,7 @@ export default class Pesquisador extends Component {
                     <div className='row mt-2'>
                         <div className='col-12'>
                             <label htmlFor="newIdInput" className="form-label">Informe um novo ID:</label>
-                            <input id="newIdInput" value={this.state.newId} onChange={this.handleNewIdChange} className='form-control' type='text' aria-label='Informe um novo ID'></input>
+                            <input id="newIdInput" value={this.state.id} onChange={this.txtId_change} className='form-control' type='text' aria-label='Informe um novo ID'></input>
                         </div>
                     </div>
                     <div className='row mt-2'>

@@ -316,90 +316,90 @@ export default class Instituto extends Component {
 				<div className="alert alert-success col-2 text-center position-fixed end-0 top-0 mt-5" role="alert" id="insertion-success-alert" hidden>
 					<i className="bi bi-check2-circle fs-4"></i> Gravado com sucesso!
 				</div>
-				<div className="row mt-4 search-bar">
-					<div className="col-10 mx-auto">
+				<div className="row mt-4 search-bar ">
+					<div className="col-10 mx-auto ">
 						
-							<table className="table border align-middle" id="search-table">
-								<thead>
-										<tr>
-											<th className="w-5 text-center">
-													<label htmlFor="formSearchInput" className="form-label">Termo:</label>
-											</th>
-											<th className="w-30">
-													<input type="search" className="form-control" id="txtSearch" placeholder="Instituto X" value={this.state.searchTerm} onChange={this.txtSearch_change} onKeyUp={(e) => this.clickWithEnter(e, 'searchButton')}/>
-											</th>
-											<th className="w-5 text-center">
-													<label htmlFor="searchCombo" className="form-label">Campo:</label>
-											</th>
-											<th className="w-20">
-													<select className="form-select" arial-label="Combo for search field" defaultValue="name" id="searchCombo" onChange={this.searchComboChange}>
-															<option value="name">Nome</option>
-															<option value="acronym">Acrônimo</option>
-													</select>
-											</th>
-											<th className="w-35 text-center">
-												<button className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
-											</th>
-										</tr>
-								</thead>
-							</table>
+						<table className="table table-light border border-secondary border-2 align-middle  bg-light " id="search-table">
+							<thead>
+									<tr>
+										<th className="w-5 text-center">
+												<label htmlFor="formSearchInput" className="form-label">Termo:</label>
+										</th>
+										<th className="w-30">
+												<input type="search" className="form-control" id="txtSearch" placeholder="Instituto X" value={this.state.searchTerm} onChange={this.txtSearch_change} onKeyUp={(e) => this.clickWithEnter(e, 'searchButton')}/>
+										</th>
+										<th className="w-5 text-center">
+												<label htmlFor="searchCombo" className="form-label">Campo:</label>
+										</th>
+										<th className="w-20">
+												<select className="form-select" arial-label="Combo for search field" defaultValue="name" id="searchCombo" onChange={this.searchComboChange}>
+														<option value="name">Nome</option>
+														<option value="acronym">Acrônimo</option>
+												</select>
+										</th>
+										<th className="w-35 text-center">
+											<button className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
+										</th>
+									</tr>
+							</thead>
+						</table>
 						
 					</div>
 				</div>
 				<div className="row">
 						<div className="col-9 mx-auto">
 							<button type="button" className="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i className="bi bi-plus-circle-dotted fs-6 me-2"></i>Adicionar</button>
-								<table className="table table-bordered table-hover" id="data-table">
-										<thead className="text-center table-dark">
-											<tr>
-													<th scope='col'></th>
-													<th scope='col'>Nome</th>
-													<th scope='col'>Acrônimo</th>
-													<th scope='col'>Funções</th>
-											</tr>
-										</thead>
-										<tbody className='table-group-divider'>
-											{ (this.state.institutes && this.state.institutes.length>0) ? (this.state.institutes.map( institute => {
-												return <tr key={institute.id}>
-													<td className='text-center'>
-														<input className="form-check-input"  type="checkbox" checked={this.instituteCheckboxChecked(institute)} onChange={() => this.instituteCheckboxChange(institute.id)}/>
-													</td>
-													<td>{institute.name}</td>
-													<td className="text-center">{institute.acronym}</td>
-													<td className="text-center">
-															<button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(institute)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
-															<button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(institute)}><i className="bi bi-trash"></i></button>
-													</td>
-												</tr>
-											})) : (
-												<tr>
-													<td colSpan="4" className="text-center">Sem itens para exibir</td>
-												</tr>)}
-										</tbody>
-										</table>
-												<div className='row'>
-													<div className='col-2'>
-														<label htmlFor="itensQuantityCombo" className="form-label fw-lighter font-small me-2">Itens / pág.</label>
-														<select className="form-select form-select-sm d-inline" arial-label="Combo for itens per page" value={this.state.itensPerPage} onChange={this.itensQuantityComboChange} id='itensQuantityCombo'>
-																<option value="5">5</option>
-																<option value="10">10</option>
-																<option value="15">15</option>
-																<option value="20">20</option>
-																<option value="25">25</option>
-														</select>
-													</div>
-													<div className='col-7 text-center '>
-														<button className="btn btn-danger m-1" onClick={() => this.beginDeletion(this.state.selectedInstitutesId)}>Excluir seleção</button>
-													</div>
-													<div className='col-3 text-end'>
-														<p className='fw-lighter font-small me-2 d-inline'>Pág. atual:</p>
-														<button onClick={this.goToFirstPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-left"></i></button>
-														<button onClick={this.goToPreviousPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-left"></i></button>
-														<p className='d-inline ps-2 pe-2 fs-6 align-middle'>{this.state.currentPage+1}</p>
-														<button onClick={this.goToNextPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-right"></i></button>
-														<button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
-													</div>
-												</div>
+							<table className="table table-bordered table-hover" id="data-table">
+								<thead className="text-center table-dark">
+									<tr>
+										<th scope='col'></th>
+										<th scope='col'>Nome</th>
+										<th scope='col'>Acrônimo</th>
+										<th scope='col'>Funções</th>
+									</tr>
+								</thead>
+								<tbody className='table-group-divider'>
+									{ (this.state.institutes && this.state.institutes.length>0) ? (this.state.institutes.map( institute => {
+										return <tr key={institute.id}>
+											<td className='text-center'>
+												<input className="form-check-input"  type="checkbox" checked={this.instituteCheckboxChecked(institute)} onChange={() => this.instituteCheckboxChange(institute.id)}/>
+											</td>
+											<td>{institute.name}</td>
+											<td className="text-center">{institute.acronym}</td>
+											<td className="text-center">
+													<button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(institute)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
+													<button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(institute)}><i className="bi bi-trash"></i></button>
+											</td>
+										</tr>
+									})) : (
+										<tr>
+											<td colSpan="4" className="text-center">Sem itens para exibir</td>
+										</tr>)}
+								</tbody>
+							</table>
+							<div className='row'>
+								<div className='col-2'>
+									<label htmlFor="itensQuantityCombo" className="form-label fw-lighter font-small me-2">Itens / pág.</label>
+									<select className="form-select form-select-sm d-inline" arial-label="Combo for itens per page" value={this.state.itensPerPage} onChange={this.itensQuantityComboChange} id='itensQuantityCombo'>
+											<option value="5">5</option>
+											<option value="10">10</option>
+											<option value="15">15</option>
+											<option value="20">20</option>
+											<option value="25">25</option>
+									</select>
+								</div>
+								<div className='col-7 text-center '>
+									<button className="btn btn-danger m-1" onClick={() => this.beginDeletion(this.state.selectedInstitutesId)}>Excluir seleção</button>
+								</div>
+								<div className='col-3 text-end'>
+									<p className='fw-lighter font-small me-2 d-inline'>Pág. atual:</p>
+									<button onClick={this.goToFirstPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-left"></i></button>
+									<button onClick={this.goToPreviousPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-left"></i></button>
+									<p className='d-inline ps-2 pe-2 fs-6 align-middle'>{this.state.currentPage+1}</p>
+									<button onClick={this.goToNextPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-right"></i></button>
+									<button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
+								</div>
+							</div>
 						</div>
 				</div>
 
