@@ -373,7 +373,7 @@ export default class Instituto extends Component {
 										</tr>
 									})) : (
 										<tr>
-											<td colSpan="4" className="text-center">Sem itens para exibir</td>
+											<td colSpan="5" className="text-center">Sem itens para exibir</td>
 										</tr>)}
 								</tbody>
 							</table>

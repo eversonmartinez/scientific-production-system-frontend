@@ -251,7 +251,7 @@ export default class Pesquisador extends Component {
 		var alert = document.getElementById(alertid);
 		if(alert){
 			alert.querySelector('.alert-message').textContent = message;
-			
+      alert.removeAttribute("hidden");
 		}
 	}
 
@@ -276,6 +276,14 @@ export default class Pesquisador extends Component {
     //   "id": this.state.id,
     //   "institute_id": this.state.selectedInstituteId
     // };
+    if(!this.state.id){
+      this.showAlertWithMessage('insertion-error-alert', "Um ID de pesquisador deve ser informado!");
+      return;
+    }
+    if(!this.state.selectedInstituteId){
+      this.showAlertWithMessage('insertion-error-alert', "Um instituto deve ser selecionado!");
+      return;
+    }
 
 		var url = window.server + '/researcher';
     let requestOptions;
@@ -331,7 +339,7 @@ export default class Pesquisador extends Component {
               document.getElementById('btnCloseModal').click();
               this.clearState();
               this.clearPagination();
-              //this.showAlert('insertion-success-alert');
+              this.showAlert('insertion-success-alert');
               this.setState({including: false, editing: false});
               setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
             }
@@ -417,7 +425,9 @@ export default class Pesquisador extends Component {
             </div>
 				  </div>
         <hr />
-
+        <div className="alert alert-success col-2 text-center position-fixed end-0 top-0 mt-5" role="alert" id="insertion-success-alert" hidden>
+					<i className="bi bi-check2-circle fs-4"></i> Gravado com sucesso!
+				</div>
         {/* Retângulo com bordas */}
         <div className="border rounded p-3 bg-light mb-3">
           <div className="row">
@@ -465,7 +475,7 @@ export default class Pesquisador extends Component {
                 </tr>
               })) : (
                 <tr>
-                  <td colSpan="4" className="text-center">Sem itens para exibir</td>
+                  <td colSpan="5" className="text-center">Sem itens para exibir</td>
                 </tr>)}
           </tbody>
         </table>
