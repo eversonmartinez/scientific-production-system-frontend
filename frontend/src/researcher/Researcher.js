@@ -38,7 +38,7 @@ export default class Pesquisador extends Component {
   // Função para manipular a seleção/deseleção de pesquisadores
   researcherCheckboxChange = (id) => {
     // Cria uma cópia do array selectedResearchersId
-    const selectedIds = this.selectedResearchersId.slice();
+    const selectedIds = (this.state.selectedResearchersId) ? this.state.selectedResearchersId.slice() : null;
 
     // Se o array for vazio ou null, adiciona o id ao array
     if (!selectedIds || selectedIds.length === 0) {
@@ -417,7 +417,7 @@ export default class Pesquisador extends Component {
 
   render() {
     return (
-      <div className="container mt-5">
+      <div className="container mt-5 mb-5">
         	<div className="row">
             <div className="col-12">
               <br></br>
