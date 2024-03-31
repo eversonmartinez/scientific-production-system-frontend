@@ -12,7 +12,7 @@ export default class Instituto extends Component {
 		editing: false,
 		selectedInstitutesId: [],
 		searchTerm: "",
-		field: "name",
+		field: "all",
 		currentPage: 0,
 		itensPerPage: 20,
 		lastPage: 0
@@ -87,7 +87,7 @@ export default class Instituto extends Component {
 
 	search = () => {
 		if(this.state.searchTerm){
-			const url = `${window.server}/institute/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&${this.state.field}=${this.state.searchTerm}`;
+			const url = `${window.server}/institute/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&field=${this.state.field}&term=${this.state.searchTerm}`;
 			fetch(url)
 			.then((response) => response.json())
 			.then((json) => {
@@ -333,10 +333,11 @@ export default class Instituto extends Component {
 											<label htmlFor="searchCombo" className="form-label">Campo:</label>
 									</th>
 									<th className="w-20">
-											<select className="form-select" arial-label="Combo for search field" defaultValue="name" id="searchCombo" onChange={this.searchComboChange}>
-													<option value="name">Nome</option>
-													<option value="acronym">Acrônimo</option>
-											</select>
+										<select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchCombo" onChange={this.searchComboChange}>
+											<option value="all">Todos</option>
+											<option value="name">Nome</option>
+											<option value="acronym">Acrônimo</option>
+										</select>
 									</th>
 									<th className="w-35 text-center">
 										<button type="button" className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>

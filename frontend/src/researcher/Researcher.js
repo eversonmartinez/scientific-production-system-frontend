@@ -13,7 +13,7 @@ export default class Pesquisador extends Component {
     editing: false,
     selectedResearchersId: [],
     searchTerm: "",
-		field: "name",
+		field: "all",
 		currentPage: 0,
 		itensPerPage: 20,
 		lastPage: 0,
@@ -100,8 +100,9 @@ export default class Pesquisador extends Component {
 
   search = () => {
 		if(this.state.searchTerm){
-			const url = `${window.server}/researcher/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&${this.state.field}=${this.state.searchTerm}`;
-			fetch(url)
+			const url = `${window.server}/researcher/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&field=${this.state.field}&term=${this.state.searchTerm}`;
+			console.log(url)
+      fetch(url)
 			.then((response) => response.json())
 			.then((json) => {
 				this.state.lastPage = Number(json.totalPages) - 1;
@@ -225,6 +226,7 @@ export default class Pesquisador extends Component {
     document.getElementById("insertionModalTitle").textContent = "Acrescentar pesquisador" ;
     document.getElementById("labelNewIdInput").textContent = "Informe um novo ID:";
     document.getElementById("newIdInput").readOnly = false;
+    this.setState({including: true})
 	}
 
   beginEdit = (researcher) => {
@@ -313,7 +315,8 @@ export default class Pesquisador extends Component {
               body: JSON.stringify(data)
             };
           }
-          if(this.state.editing){
+
+          else if(this.state.editing){
             requestOptions = {
               method: 'PUT',
               headers: {
@@ -409,11 +412,11 @@ export default class Pesquisador extends Component {
             </div>
             <div className="col-md-3">
               <label htmlFor="searchField" className="form-label">Campo</label>
-              <select className="form-select" id="searchField" defaultValue="name" onChange={this.searchComboChange}>
-                {/*A implementar: <option value="all">Todos</option> */}
+              <select className="form-select" id="searchField" defaultValue="all" onChange={this.searchComboChange}>
+                <option value="all">Todos</option>
                 <option value="name">Nome</option>
                 <option value="email">E-mail</option>
-                {/* A implementar: <option value="desc">Instituto</option> */}
+                <option value="institute">Intituto</option>
               </select>
             </div>
             <div className="col-md-3 d-flex align-items-end">
