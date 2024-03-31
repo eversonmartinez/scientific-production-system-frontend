@@ -222,12 +222,17 @@ export default class Pesquisador extends Component {
 
   beginInsertion = () => {
 		this.clearState();
-		this.setState({including: true})
+    document.getElementById("insertionModalTitle").textContent = "Acrescentar pesquisador" ;
+    document.getElementById("labelNewIdInput").textContent = "Informe um novo ID:";
+    document.getElementById("newIdInput").readOnly = false;
 	}
 
   beginEdit = (researcher) => {
 		this.clearState();
-		this.setState({editing: true, id: researcher.id, name: researcher.name, email: researcher.email})
+    document.getElementById("insertionModalTitle").textContent = "Editar pesquisador" ;
+    document.getElementById("labelNewIdInput").textContent = "ID:";
+    document.getElementById("newIdInput").readOnly = true ;
+		this.setState({editing: true, id: researcher.id, name: researcher.name, email: researcher.email, selectedInstituteId: researcher.institute.id, selectedInstituteName: researcher.institute.name});
 	}
 
   // hideAlert = (alertid) => {
@@ -271,10 +276,6 @@ export default class Pesquisador extends Component {
   }
 
   save = () => {
-		// let data = {
-    //   "id": this.state.id,
-    //   "institute_id": this.state.selectedInstituteId
-    // };
     if(!this.state.id){
       this.showAlertWithMessage('insertion-error-alert', "Um ID de pesquisador deve ser informado!");
       return;
@@ -287,44 +288,34 @@ export default class Pesquisador extends Component {
 		var url = window.server + '/researcher';
     let requestOptions;
 
-		//if(this.state.including){}
-
-    /*Precisei comentar o modelo de edição para criar o novo método de salvar, utlizando o formato que Gurgel criou. Após isso será neessário reestruturar esse método*/
-		// else if(this.state.editing){
-		// 	data = {
-		// 		"id": this.state.id,
-		// 		"name": this.state.name,
-		// 		"email": this.state.email
-		// 	}
-      
-			// requestOptions = {
-			// 	method: 'PUT',
-			// 	headers: {
-			// 		'Content-Type': 'application/json'
-			// 	},
-			// 	body: JSON.stringify(data)
-			// };
-		// 	url+="/" + data.id;
-		// }
-
 		fetch(url+'/curriculum/'+this.state.id)
 			.then((response) => response.json())
       .then((responseData) => {
         //Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
 		    /* eslint-disable */
         if(confirm("Deseja mesmo incluir o Lattes " + responseData.id + " de " + responseData.name + " na " + this.state.selectedInstituteName  + "?")){
-        /* eslint-enable */
+          /* eslint-enable */
+          var selectedInstitute = this.state.institutes.find((i) => i.id === this.state.selectedInstituteId);
+          
+          let data = {
+                "id": responseData.id,
+                "name": responseData.name,
+                "email": responseData.email,
+                "institute": selectedInstitute
+          };
+
           if(this.state.including){
-            var selectedInstitute = this.state.institutes.find((i) => i.id === this.state.selectedInstituteId);
-            
-            let data = {
-              		"id": responseData.id,
-              		"name": responseData.name,
-              		"email": responseData.email,
-                  "institute": selectedInstitute
-            };
             requestOptions = {
               method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            };
+          }
+          if(this.state.editing){
+            requestOptions = {
+              method: 'PUT',
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -350,24 +341,6 @@ export default class Pesquisador extends Component {
 						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
         }
       })
-      
-      
-  //     {
-	// 			if(response.ok){
-	// 				document.getElementById('btnCloseModal').click();
-	// 				this.clearState();
-	// 				this.clearPagination();
-	// 				this.showAlert('insertion-success-alert');
-	// 				this.setState({including: false, editing: false});
-	// 				setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
-	// 			}
-	// 			else{
-	// 				response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
-	// 			}
-	// 		})
-	// 			.then()
-	// 				.then(() => this.fillList())
-	// 					.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
 
 
@@ -469,7 +442,8 @@ export default class Pesquisador extends Component {
                   <td className="text-center">{researcher.email}</td>
                   <td className="test-center">{researcher.institute.name}</td>
                   <td className="text-center">
-                      <button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(researcher)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
+                      {/* Botão removido pois o professor informou que essa edição era desnecessária */}
+                      {/* <button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(researcher)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button> */}
                       <button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(researcher)}><i className="bi bi-trash"></i></button>
                   </td>
                 </tr>
@@ -528,7 +502,7 @@ export default class Pesquisador extends Component {
                     </div>
                     <div className='row mt-2'>
                         <div className='col-12'>
-                            <label htmlFor="newIdInput" className="form-label">Informe um novo ID:</label>
+                            <label htmlFor="newIdInput" className="form-label" id="labelNewIdInput">Informe um novo ID:</label>
                             <input id="newIdInput" value={this.state.id} onChange={this.txtId_change} className='form-control' type='text' aria-label='Informe um novo ID'></input>
                         </div>
                     </div>
