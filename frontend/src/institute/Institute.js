@@ -339,7 +339,7 @@ export default class Instituto extends Component {
 											</select>
 									</th>
 									<th className="w-35 text-center">
-										<button className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
+										<button type="button" className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
 									</th>
 								</tr>
 						</thead>

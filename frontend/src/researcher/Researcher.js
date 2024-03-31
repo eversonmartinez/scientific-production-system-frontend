@@ -6,7 +6,6 @@ export default class Pesquisador extends Component {
     id: "",
     name: "",
     email: "",
-    idInstituto: "",
     selectedInstituteId: '',
     selectedInstituteName: '',
     institutes: [],
@@ -204,7 +203,7 @@ export default class Pesquisador extends Component {
   // Função para limpar o estado do componente
   clearState = () => {
     // Reiniciando os valores dos estados id, name e email
-    this.setState({id: '', name: '', email: '', idInstituto:'', selectedInstituteId: '', selectedInstituteName:''});
+    this.setState({id: '', name: '', email: '', selectedInstituteId: '', selectedInstituteName:''});
     // Escondendo alertas
     this.hideAlert('insertion-success-alert');
     this.hideAlert('insertion-error-alert');
@@ -433,14 +432,15 @@ export default class Pesquisador extends Component {
           <div className="row">
             <div className="col-md-6">
               <label htmlFor="term" className="form-label">Termo</label>
-              <input type="text" className="form-control" id="term" placeholder="Pesquisadores nome"/>
+              <input type="search" className="form-control" id="term" placeholder="Pesquisador" onChange={this.txtSearch_change} onKeyUp={(e) => this.clickWithEnter(e, 'searchButton')}/>
             </div>
             <div className="col-md-3">
-              <label htmlFor="order" className="form-label">Campo</label>
-              <select className="form-select" id="order" defaultValue={'Todos'}>
-                <option value="all">Nome</option>
-                <option value="asc">E-mail</option>
-                <option value="desc">Instituto</option>
+              <label htmlFor="searchField" className="form-label">Campo</label>
+              <select className="form-select" id="searchField" defaultValue="name" onChange={this.searchComboChange}>
+                {/*A implementar: <option value="all">Todos</option> */}
+                <option value="name">Nome</option>
+                <option value="email">E-mail</option>
+                {/* A implementar: <option value="desc">Instituto</option> */}
               </select>
             </div>
             <div className="col-md-3 d-flex align-items-end">
