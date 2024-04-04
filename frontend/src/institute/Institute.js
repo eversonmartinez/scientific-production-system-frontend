@@ -61,8 +61,8 @@ export default class Instituto extends Component {
   	// ser inseridas no switch e sua tradução equivalente ser retornada.
 	translateBackendMessages = (message) => {
 		switch (message){
-		  case "This institute name already exists. Please provide another name!":
-			return "Esse nome de instituto já existe. Por favor, forneça outro nome!";
+			case "This institute name already exists. Please provide another name!":
+				return "Esse nome de instituto já existe. Por favor, forneça outro nome!";
 		  default:
 			return message;
 		}
@@ -280,7 +280,7 @@ export default class Instituto extends Component {
 			})
 				.then()
 					.then(() => this.fillList())
-						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
+						.catch(error => this.showAlertWithMessage('error-alert', error));
 	}
 
 	delete = (instituteId) => {
@@ -294,8 +294,13 @@ export default class Instituto extends Component {
 		const url = window.server + '/institute/' + instituteId
 
 		fetch(url, requestOptions)
-			.then(() => this.fillList())
-				.catch((error) => console.log(error));
+		.then((response) => {
+			if (!response.ok) {
+				response.json().then((data) => data.message).then((text) => {this.showAlertWithMessage('error-alert', "Não foi possível excluir um dos elementos, pois existe um pesquisador atrelado"); setTimeout(() => this.hideAlert('error-alert'), 10000);});
+			}
+			this.fillList()
+			})
+		.catch((error) => console.log(error));
 	}
 	
 	beginDeletion = (institutes) => {
@@ -327,6 +332,11 @@ export default class Instituto extends Component {
 			<hr />
 			<div className="alert alert-success col-2 text-center position-fixed end-0 top-0 mt-5" role="alert" id="insertion-success-alert" hidden>
 				<i className="bi bi-check2-circle fs-4"></i> Gravado com sucesso!
+			</div>
+			<div className="alert alert-danger col-2 text-center position-fixed end-0 top-0 mt-5" role="alert" id="error-alert" hidden>
+				<p><i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>Erro ao gravar</p>
+				<hr/>
+				<p className='mb-0 alert-message'></p>
 			</div>
 			<div className="row mt-4 search-bar ">
 				<div className="col-10 mx-auto ">

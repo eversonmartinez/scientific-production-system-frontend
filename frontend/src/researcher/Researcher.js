@@ -306,7 +306,6 @@ export default class Pesquisador extends Component {
         if (response.ok){
           response.json()
           .then((responseData) => {
-            console.log(responseData);
             //Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
             /* eslint-disable */
             if(confirm("Deseja mesmo incluir o Lattes " + responseData.id + " de " + responseData.name + " na " + this.state.selectedInstituteName  + "?")){
