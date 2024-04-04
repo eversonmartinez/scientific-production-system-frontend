@@ -56,15 +56,18 @@ export default class Instituto extends Component {
 	txtSearch_change = (event) => {
 		this.setState({searchTerm: event.target.value})
 	}
-
-	//	Metodo antigo, preenchia a lista com todos os itens existentes no banco
-	// fillList = () => {
-	// 	const url = window.server + "/institute";
-	// 	fetch(url)
-	// 	.then((response) => response.json())
-	// 	.then((data) =>  this.setState({institutes : data}))
-	// }
 	
+	// Função simples criada para traduzir as mensagens do banco. Não possui nenhuma inteligência, as mensagens conhecidas devem 
+  	// ser inseridas no switch e sua tradução equivalente ser retornada.
+	translateBackendMessages = (message) => {
+		switch (message){
+		  case "This institute name already exists. Please provide another name!":
+			return "Esse nome de instituto já existe. Por favor, forneça outro nome!";
+		  default:
+			return message;
+		}
+	}
+
 	fillList = () => {
 		const url = `${window.server}/institute/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}`;
 		fetch(url)
@@ -215,6 +218,14 @@ export default class Instituto extends Component {
 	}
 
 	save = () => {
+		if(!this.state.name){
+			this.showAlertWithMessage('insertion-error-alert', "Um nome deve ser informado!");
+			return;
+		}
+		if(!this.state.acronym){
+			this.showAlertWithMessage('insertion-error-alert', "Um acrônimo deve ser informado!");
+			return;
+		}
 		let data;
 
 		let requestOptions;
@@ -264,7 +275,7 @@ export default class Instituto extends Component {
 					setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
 				}
 				else{
-					response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
+					response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', this.translateBackendMessages(text)));
 				}
 			})
 				.then()

@@ -77,6 +77,18 @@ export default class Pesquisador extends Component {
 		this.setState({instituteSearchTerm: event.target.value})
 	}
 
+  
+  // Função simples criada para traduzir as mensagens do banco. Não possui nenhuma inteligência, as mensagens conhecidas devem 
+  // ser inseridas no switch e sua tradução equivalente ser retornada.
+  translateBackendMessages = (message) => {
+    switch (message){
+      case "This curriculum ID doesn't exist!":
+        return "Esse ID de curriculum não existe!";
+      default:
+        return message;
+    }
+  }
+
   // Função para preencher a lista de pesquisadores
 	fillList = () => {
 		const url = `${window.server}/researcher/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}`;
@@ -101,7 +113,6 @@ export default class Pesquisador extends Component {
   search = () => {
 		if(this.state.searchTerm){
 			const url = `${window.server}/researcher/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&field=${this.state.field}&term=${this.state.searchTerm}`;
-			console.log(url)
       fetch(url)
 			.then((response) => response.json())
 			.then((json) => {
@@ -291,59 +302,69 @@ export default class Pesquisador extends Component {
     let requestOptions;
 
 		fetch(url+'/curriculum/'+this.state.id)
-			.then((response) => response.json())
-      .then((responseData) => {
-        //Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
-		    /* eslint-disable */
-        if(confirm("Deseja mesmo incluir o Lattes " + responseData.id + " de " + responseData.name + " na " + this.state.selectedInstituteName  + "?")){
-          /* eslint-enable */
-          var selectedInstitute = this.state.institutes.find((i) => i.id === this.state.selectedInstituteId);
-          
-          let data = {
-                "id": responseData.id,
-                "name": responseData.name,
-                "email": responseData.email,
-                "institute": selectedInstitute
-          };
+			.then((response) => {
+        if (response.ok){
+          response.json()
+          .then((responseData) => {
+            console.log(responseData);
+            //Os seguintes comentários servem para que o javascript consiga criar a janela de confirmação, não os remova.
+            /* eslint-disable */
+            if(confirm("Deseja mesmo incluir o Lattes " + responseData.id + " de " + responseData.name + " na " + this.state.selectedInstituteName  + "?")){
+              /* eslint-enable */
+              var selectedInstitute = this.state.institutes.find((i) => i.id === this.state.selectedInstituteId);
+              
+              let data = {
+                    "id": responseData.id,
+                    "name": responseData.name,
+                    "email": responseData.email,
+                    "institute": selectedInstitute
+              };
 
-          if(this.state.including){
-            requestOptions = {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
-            };
-          }
+              if(this.state.including){
+                requestOptions = {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(data)
+                };
+              }
 
-          else if(this.state.editing){
-            requestOptions = {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(data)
-            };
-          }
+              else if(this.state.editing){
+                requestOptions = {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(data)
+                };
+              }
 
-          fetch(url, requestOptions)
-          .then((response) => {
-            if(response.ok){
-              document.getElementById('btnCloseModal').click();
-              this.clearState();
-              this.clearPagination();
-              this.showAlert('insertion-success-alert');
-              this.setState({including: false, editing: false});
-              setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
+              fetch(url, requestOptions)
+              .then((response) => {
+                if(response.ok){
+                  document.getElementById('btnCloseModal').click();
+                  this.clearState();
+                  this.clearPagination();
+                  this.showAlert('insertion-success-alert');
+                  this.setState({including: false, editing: false});
+                  setTimeout(() => this.hideAlert('insertion-success-alert'), 5000);
+                }
+                else{
+                  response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
+                }
+              })
+              .then(() => this.fillList())
+              .catch(error => this.showAlertWithMessage('insertion-error-alert', error));
             }
-            else{
-              response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', text));
             }
-          })
-          .then(() => this.fillList())
-						.catch(error => this.showAlertWithMessage('insertion-error-alert', error));
+          )
         }
+        else{
+					response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', this.translateBackendMessages(text)));
+				}
       })
+      .catch(error => this.showAlertWithMessage('insertion-error-alert', error));
 	}
 
 
