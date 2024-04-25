@@ -1,0 +1,40 @@
+#search-table thead tr th:nth-child(1){
+    width: 10%;
+}
+
+#search-table thead tr th:nth-child(2){
+    width: 50%;
+}
+
+#search-table thead tr th:nth-child(3){
+    width: 10%;
+}
+
+#search-table thead tr th:nth-child(4){
+    width: 15%;
+}
+
+#search-table thead tr th:nth-child(5){
+    width: 15%;
+}
+
+
+#data-table thead tr th:nth-child(1){
+    width: 5%;
+}
+
+#data-table thead tr th:nth-child(2){
+    width: 10%;
+}
+
+#data-table thead tr th:nth-child(3){
+    width: 85%;
+}
+
+.font-small{
+    font-size: 0.8rem;
+}
+
+#itensQuantityCombo{
+    width: 3.9rem;
+}

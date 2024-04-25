@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import '../styles/ProductionItem.css';
 
 export default class ItensProducao extends Component {
  
@@ -7,7 +8,7 @@ export default class ItensProducao extends Component {
 		productionItems: [],
 		including: false,
 		editing: false,
-		selectedproductionItemsId: [],
+		selectedProductionItemsId: [],
 		searchTerm: "",
 		field: "all",
 		currentPage: 0, 
@@ -15,8 +16,61 @@ export default class ItensProducao extends Component {
 		lastPage: 0
 	}
 
+  
   txtSearch_change = (event) => {
 		this.setState({searchTerm: event.target.value})
+	}
+
+  searchComboChange = (event) => {	
+		this.setState({field : event.target.options[event.target.selectedIndex].value});
+	}
+
+  itensQuantityComboChange = (event) => {
+		this.clearPagination();
+		this.setState({itensPerPage : event.target.options[event.target.selectedIndex].value}, () => this.fillList());
+	}
+
+  productionItemsCheckboxChange = (id) => {
+		const selectedIds = this.state.selectedProductionItemsId.slice();
+
+		
+		if (!selectedIds || selectedIds.length===0){
+			this.setState({selectedProductionItemsId : [ id ]});
+		}
+		else if (selectedIds.includes(id)){
+			this.setState({selectedProductionItemsId : selectedIds.filter(item => item !== id)});
+		}
+		else{
+			selectedIds.push(id)
+			this.setState({selectedProductionItemsId : selectedIds});
+		}
+	}
+  
+  productionItemsCheckboxChecked = (productionItem) => {
+		if (this.state.selectedProductionItemsId)
+			return this.state.selectedProductionItemsId.includes(productionItem.id);
+		else
+			return false;
+	}
+
+  fillList = () => {
+		const url = `${window.server}/work`;
+		fetch(url)
+		.then((response) => response.json())
+		.then((data) =>  {
+			this.setState({productionItems : data});
+		})
+		.catch(e => {this.clearPagination()})
+	}
+
+  clearState = () => {
+		this.setState({id: ""});
+		this.hideAlert('insertion-success-alert');
+		this.hideAlert('insertion-error-alert');
+	}
+
+  componentDidMount() {
+		this.fillList();
 	}
 
   render() {
@@ -107,14 +161,14 @@ export default class ItensProducao extends Component {
                   { (this.state.productionItems && this.state.productionItems.length>0) ? (this.state.productionItems.map( productionItem => {
                     return <tr key={productionItem.id}>
                       <td className='text-center'>
-                        <input className="form-check-input"  type="checkbox" checked={this.productionItemCheckboxChecked(productionItem)} onChange={() => this.productionItemCheckboxChange(productionItem.id)}/>
+                        <input className="form-check-input"  type="checkbox" checked={this.productionItemsCheckboxChecked(productionItem)} onChange={() => this.productionItemsCheckboxChange(productionItem.id)}/>
                       </td>
-                      <td>{productionItem.name}</td>
-                      <td className="text-center">{productionItem.acronym}</td>
-                      <td className="text-center">
+                      <td className='text-center'>{productionItem.type}</td>
+                      <td className="text-center">{productionItem.details}</td>
+                      {/* <td className="text-center">
                           <button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(productionItem)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
                           <button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(productionItem)}><i className="bi bi-trash"></i></button>
-                      </td>
+                      </td> */}
                     </tr>
                   })) : (
                     <tr>
@@ -149,7 +203,7 @@ export default class ItensProducao extends Component {
         </div>
   
         {/* <!-- Modal --> */}
-        <div className="modal fade" id="insertionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="insertionModalCenterTitle" aria-hidden="true">
+        {/* <div className="modal fade" id="insertionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="insertionModalCenterTitle" aria-hidden="true">
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
@@ -199,7 +253,7 @@ export default class ItensProducao extends Component {
               </div>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       )
     }
