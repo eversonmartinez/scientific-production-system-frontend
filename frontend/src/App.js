@@ -10,6 +10,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import 'bootstrap';
 
 import * as bootstrap from 'bootstrap';
+import ItensProducao from './production-itens/ProductionItems';
 
 window.bootstrap = bootstrap;
 
@@ -26,6 +27,8 @@ class App extends React.Component{
             <Route path="/instituto" element={<Instituto />}>
             </Route>
             <Route path="/pesquisador" element={<Pesquisador />}>
+            </Route>
+            <Route path="/itensProducao" element={<ItensProducao />}>
             </Route>
           </Routes>
           <Rodape />

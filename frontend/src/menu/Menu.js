@@ -41,7 +41,8 @@ export default class Menu extends Component {
                       <Link to="/" className='nav-link active' onClick={this.changeOfRoute} id="linkToHome">Painel Principal</Link>
                     </li>
                     <li className="nav-item">
-                      <a className="nav-link" href="#">Itens de Produção</a>
+                      {/* <a className="nav-link" href="#">Itens de Produção</a> */}
+                      <Link to="/itensProducao" className='nav-link' onClick={this.changeOfRoute} id="linkToProductionItems">Itens de Produção</Link>
                     </li>
                     <li className="nav-item">
                         {/* <a class="nav-link" href="instituto.html">Instituto</a> */}

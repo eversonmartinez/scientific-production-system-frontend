@@ -84,6 +84,8 @@ export default class Pesquisador extends Component {
     switch (message){
       case "This curriculum ID doesn't exist!":
         return "Esse ID de curriculum não existe!";
+      case "This researcher ID already exists!":
+        return "Esse ID de Pesquisador já existe!";
       default:
         return message;
     }
@@ -354,7 +356,7 @@ export default class Pesquisador extends Component {
                 }
               })
               .then(() => this.fillList())
-              .catch(error => this.showAlertWithMessage('insertion-error-alert', error));
+              .catch(error => this.showAlertWithMessage('insertion-error-alert', this.translateBackendMessages(error)));
             }
             }
           )
@@ -363,7 +365,7 @@ export default class Pesquisador extends Component {
 					response.json().then((data) => data.message).then((text) => this.showAlertWithMessage('insertion-error-alert', this.translateBackendMessages(text)));
 				}
       })
-      .catch(error => this.showAlertWithMessage('insertion-error-alert', error));
+      .catch(error => this.showAlertWithMessage('insertion-error-alert', this.translateBackendMessages(error)));
 	}
 
 
