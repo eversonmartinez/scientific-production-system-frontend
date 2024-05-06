@@ -5,24 +5,37 @@ export default class ItensProducao extends Component {
  
   state = {
 		id: "",
+    startDate: "2000",
+    endDate: "2024",
+    institute: "all",
+    researcher: "all",
+    productionType: "all",
 		productionItems: [],
 		including: false,
 		editing: false,
-		selectedProductionItemsId: [],
-		searchTerm: "",
-		field: "all",
 		currentPage: 0, 
 		itensPerPage: 20,
 		lastPage: 0
 	}
 
-  
-  txtSearch_change = (event) => {
-		this.setState({searchTerm: event.target.value})
+  searchComboStartDateChange = (event) => {	
+		this.setState({startDate : event.target.options[event.target.selectedIndex].value});
 	}
 
-  searchComboChange = (event) => {	
-		this.setState({field : event.target.options[event.target.selectedIndex].value});
+  searchComboEndDateChange = (event) => {	
+		this.setState({endDate : event.target.options[event.target.selectedIndex].value});
+	}
+
+  searchComboInstituteChange = (event) => {	
+		this.setState({institute : event.target.options[event.target.selectedIndex].value});
+	}
+
+  searchComboResearcherChange = (event) => {	
+		this.setState({researcher : event.target.options[event.target.selectedIndex].value});
+	}
+
+  searchComboProductionTypeChange = (event) => {	
+		this.setState({productionType : event.target.options[event.target.selectedIndex].value});
 	}
 
   itensQuantityComboChange = (event) => {
@@ -63,10 +76,85 @@ export default class ItensProducao extends Component {
 		.catch(e => {this.clearPagination()})
 	}
 
+  search = () => {
+    const url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate}&endYear=${this.state.endDate}&type=${this.state.productionType}`;
+    fetch(url)
+    .then((response) => response.json())
+    .then((json) => {
+      this.state.lastPage = Number(json.totalPages) - 1;
+      
+      var data = {
+        productionItems : json.content,
+        pageable : json.pageable
+      };
+      return data
+    })
+    .then((data) =>  {
+      this.setState({productionItems : data.productionItems});
+      this.setState({currentPage: Number(data.pageable.pageNumber)});
+    })
+    .catch(e => {this.clearPagination()})
+	}
+	
+	fillOrSearch = () => {
+		if(this.state.searchTerm)
+			this.search();
+		else
+			this.fillList();
+	}
+
   clearState = () => {
 		this.setState({id: ""});
 		this.hideAlert('insertion-success-alert');
 		this.hideAlert('insertion-error-alert');
+	}
+
+  //Métodos para navegar entre as páginas da lista exibida
+	goToFirstPage = () => {
+		if(this.state.currentPage != 0){
+			this.state.currentPage = 0;
+			this.fillOrSearch();
+		}
+	}
+	
+	goToPreviousPage = () => {
+		if(this.state.currentPage > 0){
+			this.state.currentPage--;
+			this.fillOrSearch();
+		}
+
+	}
+
+	goToNextPage = () => {
+		if(this.state.currentPage < this.state.lastPage){
+			this.state.currentPage++;
+			this.fillOrSearch();
+		}
+
+	}
+
+	goToLastPage = () => {
+		if(this.state.currentPage != this.state.lastPage){
+			this.state.currentPage = this.state.lastPage;
+			this.fillOrSearch();
+		}
+	}
+	//Fim
+
+  clearPagination = () => {
+		this.state.currentPage=0;
+		this.state.lastPage=0;
+		this.state.limit=20;
+	}
+
+  searchButtonClicked = () => {
+		this.clearPagination();
+		this.search();
+	}
+
+  itensQuantityComboChange = (event) => {
+		this.clearPagination();
+		this.setState({itensPerPage : event.target.options[event.target.selectedIndex].value}, () => this.fillOrSearch());
 	}
 
   componentDidMount() {
@@ -90,65 +178,84 @@ export default class ItensProducao extends Component {
           <hr/>
           <p className='mb-0 alert-message'></p>
         </div>
-        <div className="row mt-4 search-bar ">
-          <div className="col-10 mx-auto ">
+        {/* <div className="row mt-4 search-bar ">
+          <div className="col-10 mx-auto "> */}
             
-            <table className="table table-light border border-secondary border-2 align-middle  bg-light " id="search-table">
-              <thead>
-                  <tr>
-                    <th className="w-5 text-center">
-                        <label htmlFor="formSearchInput" className="form-label">Termo:</label>
-                    </th>
-                    <th className="w-30">
-                        <input type="search" className="form-control" id="txtSearch" placeholder="Artigo X" value={this.state.searchTerm} onChange={this.txtSearch_change} onKeyUp={() => console.log('click')}/>
-                    </th>
-                    <th className="w-5 text-center">
-                        <label htmlFor="searchCombo" className="form-label">Campo:</label>
-                    </th>
-                    <th className="w-20">
-                      <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchCombo" onChange={this.searchComboChange}>
-                        <option value="all">Todos</option>
-                      </select>
-                    </th>
-                    <th className="w-35 text-center">
-                      <button type="button" className="btn btn-primary" onClick={() => console.log("click")} id="searchButton">Pesquisar</button>
-                    </th>
-                  </tr>
-                <tr>
-                  <th className="w-5 text-center">
-                        <label htmlFor="searchCombo" className="form-label">Instituto</label>
-                    </th>
-                    <th className='w-25 text-center'>
-                      <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchCombo" onChange={this.searchComboChange}>
-                        <option value="all">Instituto 1</option>
-                      </select>
-                    </th>
-                    <th className="w-'10' text-center">
-                        <label htmlFor="searchCombo" className="form-label">Pesquisador</label>
-                    </th>
-                    <th className='w-25 text-center'>
-                      <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchCombo" onChange={this.searchComboChange}>
-                        <option value="all">Todos</option>
-                      </select>
-                    </th>
-                    <th className="w-10 text-center">
-                        <label htmlFor="searchCombo" className="form-label">Tipos prod</label>
-                    </th>
-                    <th className='w-25 text-center'>
-                      <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchCombo" onChange={this.searchComboChange}>
-                        <option value="articles">Artigos pub.</option>
-                        <option value="books">LIvros pub.</option>
-                      </select>
-                    </th>
-                  </tr>
-              </thead>
-            </table>
-            
+        <div className="border rounded p-3 bg-light mb-3">
+          <div className="row mb-4 justify-content-center">
+            <div className="col-md-4">
+              <label htmlFor="searchComboStartDate" className="form-label">Data início</label>
+              <select className="form-select" arial-label="Combo for search field" defaultValue="2000" id="searchComboStartDate" onChange={this.searchComboStartDateChange}>
+                <option value="2000">2000</option>
+                <option value="2001">2001</option>
+                <option value="2002">2002</option>
+                <option value="2003">2003</option>
+                <option value="2004">2004</option>
+                <option value="2005">2005</option>
+                <option value="2006">2006</option>
+                <option value="2007">2007</option>
+                <option value="2008">2008</option>
+                <option value="2009">2009</option>
+                <option value="2010">2010</option>
+                <option value="2011">2011</option>
+                <option value="2012">2012</option>
+                <option value="2013">2013</option>
+                <option value="2014">2014</option>
+                <option value="2015">2015</option>
+              </select>
+            </div>
+            <div className="col-md-4">
+              <label htmlFor="searchComboEndDate" className="form-label">Data fim</label>
+              <select className="form-select" arial-label="Combo for search field" defaultValue="2024" id="searchComboEndDate" onChange={this.searchComboEndDateChange}>
+                <option value="2003">2003</option>
+                <option value="2004">2004</option>
+                <option value="2005">2005</option>
+                <option value="2006">2006</option>
+                <option value="2007">2007</option>
+                <option value="2008">2008</option>
+                <option value="2009">2009</option>
+                <option value="2010">2010</option>
+                <option value="2011">2011</option>
+                <option value="2012">2012</option>
+                <option value="2013">2013</option>
+                <option value="2014">2014</option>
+                <option value="2015">2015</option>
+                <option value="2016">2016</option>
+                <option value="2024">2024</option>
+              </select>
+            </div>
+            <div className="col-md-4 d-flex align-items-end">
+              <button type="button" className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
+            </div>
+          </div>
+          
+          <div className="row justify-content-center">
+            <div className="col-md-4">
+              <label htmlFor="searchComboInstitute" className="form-label">Instituto</label>
+              <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboInstitute" onChange={this.searchComboInstituteChange}>
+                <option value="all">Todos</option>
+              </select>
+              </div>
+            <div className="col-md-4">
+              <label htmlFor="searchComboResearcher" className="form-label">Pesquisador</label>
+              <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboResearcher" onChange={this.searchComboResearcherChange}>
+                <option value="all">Todos</option>
+              </select>
+            </div>
+            <div className="col-md-4">
+              <label htmlFor="searchComboProductionType" className="form-label">Tipo Prod</label>
+              <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboProductionType" onChange={this.searchComboProductionTypeChange}>
+                <option value="all">Todos</option>
+                <option value="article">Artigos pub.</option>
+                <option value="book">Livros pub.</option>
+              </select>
+            </div>
           </div>
         </div>
+
         <div className="row">
             <div className="col-9 mx-auto">
-              <button type="button" className="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i className="bi bi-plus-circle-dotted fs-6 me-2"></i>Adicionar</button>
+              {/* <button type="button" className="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i className="bi bi-plus-circle-dotted fs-6 me-2"></i>Adicionar</button> */}
               <table className="table table-bordered table-hover" id="data-table">
                 <thead className="text-center table-dark">
                   <tr>
@@ -165,10 +272,6 @@ export default class ItensProducao extends Component {
                       </td>
                       <td className='text-center'>{productionItem.type}</td>
                       <td className="text-center">{productionItem.details}</td>
-                      {/* <td className="text-center">
-                          <button className="btn btn-primary me-1" data-toggle="tooltip" data-placement="top" title="Editar Instituto" onClick={() => this.beginEdit(productionItem)} data-bs-toggle="modal" data-bs-target="#insertionModal"><i className="bi bi-pencil"></i></button>
-                          <button className="btn btn-primary mw-1" data-toggle="tooltip" data-placement="top" title="Excluir selecionado" onClick={() => this.beginDeletion(productionItem)}><i className="bi bi-trash"></i></button>
-                      </td> */}
                     </tr>
                   })) : (
                     <tr>
@@ -201,59 +304,6 @@ export default class ItensProducao extends Component {
               </div>
             </div>
         </div>
-  
-        {/* <!-- Modal --> */}
-        {/* <div className="modal fade" id="insertionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="insertionModalCenterTitle" aria-hidden="true">
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title fs-5" id="insertionModalTitle">Acrescentar item de produção</h5>
-                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" id='btnCloseModal'></button>
-              </div>
-              <div className="modal-body">
-                <div className="alert alert-danger col-10 text-center mx-auto" role="alert" id="insertion-error-alert" hidden>
-                  <p><i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>Erro ao gravar</p>
-                  <hr/>
-                  <p className='mb-0 alert-message'></p>
-                </div>
-                <div className='row mt-2'>
-                  <div className='col-2'>
-                    Id
-                  </div>
-                <div className='row mt-2'>
-                  <div className='col-2'>
-                    <input value={this.state.id} className='form-control' type='text' aria-label='Id não editável' readOnly></input>
-                  </div>
-                </div>
-                </div>
-                <div className='row mt-2'>
-                  <div className='col-2'>
-                    Nome:
-                  </div>
-                </div>
-                <div className='row mt-2'>
-                  <div className='col-11'>
-                    <input value={this.state.name} onChange={this.txtName_change} className='form-control name-pull-image' type='text'></input>
-                  </div>
-                </div>
-                <div className='row mt-2'>
-                  <div className='col-2'>
-                    Acrônimo
-                  </div>
-                </div>
-                <div className='row mt-2'>
-                  <div className='col-6'>
-                    <input value={this.state.acronym} onChange={this.txtAcronym_change} onKeyUp={(e) => this.clickWithEnter(e, 'saveInsertion')} className='form-control name-pull-image' type='text'></input>
-                  </div>
-                </div>
-              </div>
-              <div className="modal-footer">
-                  <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                  <button type="button" className="btn btn-primary" onClick={() => this.save()} id='saveInsertion'>Salvar</button>
-              </div>
-              </div>
-            </div>
-          </div> */}
         </div>
       )
     }
