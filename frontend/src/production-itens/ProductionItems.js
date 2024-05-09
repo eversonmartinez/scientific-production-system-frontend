@@ -9,10 +9,14 @@ export default class ItensProducao extends Component {
 		id: "",
     startDate: new Date(2000, 2, 5, 0, 0, 0),
     endDate:  new Date(2024, 2, 5, 0, 0, 0),
-    institute: "all",
+    selectedInstituteName: "all",
     researcher: "all",
     productionType: "all",
 		productionItems: [],
+    institutes: [],
+    selectedInstituteId: "all",
+    researchers: [],
+    selectedResearcherId: "all",
 		including: false,
 		editing: false,
 		currentPage: 0, 
@@ -22,6 +26,7 @@ export default class ItensProducao extends Component {
 
   searchDatePickerStartDateChange = (date) => {	
 		this.setState({startDate : date});
+    console.log(this.state.institutes);
 	}
 
   searchDatePickerEndDateChange = (date) => {	
@@ -29,11 +34,12 @@ export default class ItensProducao extends Component {
 	}
 
   searchComboInstituteChange = (event) => {	
-		this.setState({institute : event.target.options[event.target.selectedIndex].value});
+		this.setState({selectedInstituteId : event.target.options[event.target.selectedIndex].value});
+    // this.setState({selectedInstituteName : event.target.options[event.target.selectedIndex].});
 	}
 
   searchComboResearcherChange = (event) => {	
-		this.setState({researcher : event.target.options[event.target.selectedIndex].value});
+		this.setState({selectedResearcherId : event.target.options[event.target.selectedIndex].value});
 	}
 
   searchComboProductionTypeChange = (event) => {	
@@ -75,11 +81,41 @@ export default class ItensProducao extends Component {
 		.then((data) =>  {
 			this.setState({productionItems : data});
 		})
-		.catch(e => {this.clearPagination()})
 	}
 
+  fillInstitutesCombo = () => {
+    const url = `${window.server}/institute`;
+		fetch(url)
+		.then((response) => response.json())
+		.then((data) => {
+      this.setState({ institutes: data }); // Atualiza o estado com os dados dos institutos
+      console.log(this.state.institutes);
+    })
+    .catch((error) => {
+      console.error('Erro ao buscar institutos:', error);
+    });
+  }
+
+  fillResearchersCombo = () => {
+    const url = `${window.server}/researcher`;
+		fetch(url)
+		.then((response) => response.json())
+		.then((data) =>  {
+			this.setState({researchers : data});
+		})
+  }
+
   search = () => {
-    const url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate.getFullYear()}&endYear=${this.state.endDate.getFullYear()}&type=${this.state.productionType}`;
+    let url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate.getFullYear()}&endYear=${this.state.endDate.getFullYear()}&type=${this.state.productionType}`;
+
+    if(this.state.selectedInstituteId != "all" && this.state.selectedInstituteId != null){
+      url+= `&idInstitute=${this.state.selectedInstituteId}`
+    }
+    if(this.state.selectedResearcherId != "all" && this.state.selectedResearcherId != null){
+      url+= `&idResearcher=${this.state.selectedResearcherId}`
+    }
+
+    console.log(url)
     fetch(url)
     .then((response) => response.json())
     .then((json) => {
@@ -161,6 +197,8 @@ export default class ItensProducao extends Component {
 
   componentDidMount() {
 		this.fillList();
+    this.fillInstitutesCombo();
+    this.fillResearchersCombo();
 	}
 
 
@@ -222,14 +260,24 @@ export default class ItensProducao extends Component {
           <div className="row justify-content-center">
             <div className="col-md-4">
               <label htmlFor="searchComboInstitute" className="form-label">Instituto</label>
-              <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboInstitute" onChange={this.searchComboInstituteChange}>
+              <select className="form-select" arial-label="Combo for search field" defaultValue="all"  id="searchComboInstitute" onChange={this.searchComboInstituteChange}>
                 <option value="all">Todos</option>
+                {(this.state.institutes && this.state.institutes.length>0) &&
+                  (this.state.institutes.map((institute) => {
+                  return <option key={institute.id} value={institute.id}>{institute.name}
+                  </option>
+                })) }
               </select>
               </div>
             <div className="col-md-4">
               <label htmlFor="searchComboResearcher" className="form-label">Pesquisador</label>
               <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboResearcher" onChange={this.searchComboResearcherChange}>
-                <option value="all">Todos</option>
+              <option value="all">Todos</option>
+                {(this.state.researchers && this.state.researchers.length>0) &&
+                  (this.state.researchers.map((researcher) => {
+                  return <option key={researcher.id} value={researcher.id}>{researcher.name}
+                  </option>
+                })) }
               </select>
             </div>
             <div className="col-md-4">
