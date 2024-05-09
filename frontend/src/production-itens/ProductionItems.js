@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import '../styles/ProductionItem.css';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export default class ItensProducao extends Component {
  
   state = {
 		id: "",
-    startDate: "2000",
-    endDate: "2024",
+    startDate: new Date(2000, 2, 5, 0, 0, 0),
+    endDate:  new Date(2024, 2, 5, 0, 0, 0),
     institute: "all",
     researcher: "all",
     productionType: "all",
@@ -18,12 +20,12 @@ export default class ItensProducao extends Component {
 		lastPage: 0
 	}
 
-  searchComboStartDateChange = (event) => {	
-		this.setState({startDate : event.target.options[event.target.selectedIndex].value});
+  searchDatePickerStartDateChange = (date) => {	
+		this.setState({startDate : date});
 	}
 
-  searchComboEndDateChange = (event) => {	
-		this.setState({endDate : event.target.options[event.target.selectedIndex].value});
+  searchDatePickerEndDateChange = (date) => {	
+		this.setState({endDate : date});
 	}
 
   searchComboInstituteChange = (event) => {	
@@ -77,7 +79,7 @@ export default class ItensProducao extends Component {
 	}
 
   search = () => {
-    const url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate}&endYear=${this.state.endDate}&type=${this.state.productionType}`;
+    const url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate.getFullYear()}&endYear=${this.state.endDate.getFullYear()}&type=${this.state.productionType}`;
     fetch(url)
     .then((response) => response.json())
     .then((json) => {
@@ -161,6 +163,8 @@ export default class ItensProducao extends Component {
 		this.fillList();
 	}
 
+
+
   render() {
     return (    
       <div className='col-12 mt-5 mb-5 pt-3'>
@@ -184,29 +188,15 @@ export default class ItensProducao extends Component {
         <div className="border rounded p-3 bg-light mb-3">
           <div className="row mb-4 justify-content-center">
             <div className="col-md-4">
-              <label htmlFor="searchComboStartDate" className="form-label">Data início</label>
-              <select className="form-select" arial-label="Combo for search field" defaultValue="2000" id="searchComboStartDate" onChange={this.searchComboStartDateChange}>
-                <option value="2000">2000</option>
-                <option value="2001">2001</option>
-                <option value="2002">2002</option>
-                <option value="2003">2003</option>
-                <option value="2004">2004</option>
-                <option value="2005">2005</option>
-                <option value="2006">2006</option>
-                <option value="2007">2007</option>
-                <option value="2008">2008</option>
-                <option value="2009">2009</option>
-                <option value="2010">2010</option>
-                <option value="2011">2011</option>
-                <option value="2012">2012</option>
-                <option value="2013">2013</option>
-                <option value="2014">2014</option>
-                <option value="2015">2015</option>
-              </select>
+              <label htmlFor="searchDatePickerStartDate" className="form-label">Data início</label>
+              
+              <DatePicker id="searchDatePickerStartDate" className="form-control" selected={this.state.startDate} onChange={this.searchDatePickerStartDateChange} dateFormat="yyyy"  showYearPicker/>
+              {/*Mostra apenas o seletor de ano*/}
             </div>
             <div className="col-md-4">
               <label htmlFor="searchComboEndDate" className="form-label">Data fim</label>
-              <select className="form-select" arial-label="Combo for search field" defaultValue="2024" id="searchComboEndDate" onChange={this.searchComboEndDateChange}>
+              <DatePicker id="searchDatePickerEndDate" className="form-control" selected={this.state.endDate} onChange={this.searchDatePickerEndDateChange} dateFormat="yyyy"  showYearPicker/>
+              {/* <select className="form-select" arial-label="Combo for search field" defaultValue="2024" id="searchComboEndDate" onChange={this.searchComboEndDateChange}>
                 <option value="2003">2003</option>
                 <option value="2004">2004</option>
                 <option value="2005">2005</option>
@@ -222,7 +212,7 @@ export default class ItensProducao extends Component {
                 <option value="2015">2015</option>
                 <option value="2016">2016</option>
                 <option value="2024">2024</option>
-              </select>
+              </select> */}
             </div>
             <div className="col-md-4 d-flex align-items-end">
               <button type="button" className="btn btn-primary" onClick={this.searchButtonClicked} id="searchButton">Pesquisar</button>
