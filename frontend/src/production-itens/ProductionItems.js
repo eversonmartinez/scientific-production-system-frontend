@@ -21,7 +21,9 @@ export default class ItensProducao extends Component {
 		editing: false,
 		currentPage: 0, 
 		itensPerPage: 20,
-		lastPage: 0
+		lastPage: 0,
+    displayedItens: 0,
+		totalItens: 0
 	}
 
   searchDatePickerStartDateChange = (date) => {	
@@ -69,12 +71,26 @@ export default class ItensProducao extends Component {
 	}
 
   fillList = () => {
-		const url = `${window.server}/work`;
+		const url = `${window.server}/work/search?page=${this.state.currentPage}&limit=100`;
 		fetch(url)
 		.then((response) => response.json())
-		.then((data) =>  {
-			this.setState({productionItems : data});
+		.then((json) => {
+			this.state.lastPage = Number(json.totalPages) - 1;
+			
+			var data = {
+				productionItems : json.content,
+				pageable : json.pageable,
+				totalElements: json.totalElements,
+				numberOfElements: json.numberOfElements
+			};
+			return data
 		})
+		.then((data) =>  {
+			this.setState({productionItems : data.productionItems});
+			this.setState({currentPage: Number(data.pageable.pageNumber)});
+			this.setState({totalItens: data.totalElements, displayedItens: data.numberOfElements});
+		})
+		.catch(e => {this.clearPagination()})
 	}
 
   fillInstitutesCombo = () => {
@@ -107,22 +123,23 @@ export default class ItensProducao extends Component {
     if(this.state.selectedResearcherId != "all" && this.state.selectedResearcherId != null){
       url+= `&idResearcher=${this.state.selectedResearcherId}`
     }
-    console.log(url)
+  
     fetch(url)
     .then((response) => response.json())
     .then((json) => {
       this.state.lastPage = Number(json.totalPages) - 1;
-      console.log(json);
       var data = {
         productionItems : json.content,
-        pageable : json.pageable
+        pageable : json.pageable,
+				totalElements: json.totalElements,
+				numberOfElements: json.numberOfElements
       };
       return data
     })
     .then((data) =>  {
       this.setState({productionItems : data.productionItems});
       this.setState({currentPage: Number(data.pageable.pageNumber)});
-      console.log(this.state.lastPage)
+      this.setState({totalItens: data.totalElements, displayedItens: data.numberOfElements});
     })
     .catch(e => {this.clearPagination()})
 	}
@@ -333,6 +350,11 @@ export default class ItensProducao extends Component {
                   <button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
                 </div>
               </div>
+              <div className='row'>
+							  <div className='col-12 text-end'>
+								  <p className='fw-lighter font-small d-inline'>Exibindo {this.state.displayedItens} item(ns) de {this.state.totalItens}</p>
+							  </div>
+						  </div>
             </div>
         </div>
         </div>

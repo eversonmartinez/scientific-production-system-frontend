@@ -17,6 +17,8 @@ export default class Pesquisador extends Component {
 		currentPage: 0,
 		itensPerPage: 20,
 		lastPage: 0,
+		displayedItens: 0,
+		totalItens: 0,
     instituteSearchTerm: ''
   }
 
@@ -101,13 +103,16 @@ export default class Pesquisador extends Component {
 			
 			var data = {
 				researchers : json.content,
-				pageable : json.pageable
+				pageable : json.pageable,
+				totalElements: json.totalElements,
+				numberOfElements: json.numberOfElements
 			};
 			return data
 		})
 		.then((data) =>  {
 			this.setState({researchers : data.researchers});
 			this.setState({currentPage: Number(data.pageable.pageNumber)});
+      this.setState({totalItens: data.totalElements, displayedItens: data.numberOfElements});
 		})
 		.catch(e => {this.clearPagination()})
 	}
@@ -122,13 +127,16 @@ export default class Pesquisador extends Component {
 				
 				var data = {
 					researchers : json.content,
-					pageable : json.pageable
+					pageable : json.pageable,
+          totalElements: json.totalElements,
+				  numberOfElements: json.numberOfElements
 				};
 				return data
 			})
 			.then((data) =>  {
 				this.setState({researchers : data.researchers});
 				this.setState({currentPage: Number(data.pageable.pageNumber)});
+        this.setState({totalItens: data.totalElements, displayedItens: data.numberOfElements});
 			})
 			.catch(e => {this.clearPagination()})
 		
@@ -498,6 +506,11 @@ export default class Pesquisador extends Component {
               <button onClick={this.goToNextPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-right"></i></button>
               <button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
 					</div>
+          <div className='row'>
+							<div className='col-12 text-end'>
+								<p className='fw-lighter font-small d-inline'>Exibindo {this.state.displayedItens} item(ns) de {this.state.totalItens}</p>
+							</div>
+						</div>
         </div>
 
 

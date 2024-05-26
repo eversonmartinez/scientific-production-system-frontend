@@ -15,7 +15,9 @@ export default class Instituto extends Component {
 		field: "all",
 		currentPage: 0,
 		itensPerPage: 20,
-		lastPage: 0
+		lastPage: 0,
+		displayedItens: 0,
+		totalItens: 0
 	}
 
 	txtName_change = (event) => {
@@ -77,13 +79,16 @@ export default class Instituto extends Component {
 			
 			var data = {
 				institutes : json.content,
-				pageable : json.pageable
+				pageable : json.pageable,
+				totalElements: json.totalElements,
+				numberOfElements: json.numberOfElements
 			};
 			return data
 		})
 		.then((data) =>  {
 			this.setState({institutes : data.institutes});
 			this.setState({currentPage: Number(data.pageable.pageNumber)});
+			this.setState({totalItens: data.totalElements, displayedItens: data.numberOfElements});
 		})
 		.catch(e => {this.clearPagination()})
 	}
@@ -98,13 +103,18 @@ export default class Instituto extends Component {
 				
 				var data = {
 					institutes : json.content,
-					pageable : json.pageable
+					pageable : json.pageable,
+					totalElements: json.totalElements,
+					numberOfElements: json.numberOfElements
 				};
 				return data
 			})
 			.then((data) =>  {
 				this.setState({institutes : data.institutes});
 				this.setState({currentPage: Number(data.pageable.pageNumber)});
+				this.setState({totalItens: data.totalElements, displayedItens: data.numberOfElements});
+				console.log(this.state.totalItens);
+				console.log(this.state.displayedItens);
 			})
 			.catch(e => {this.clearPagination()})
 		
@@ -128,7 +138,7 @@ export default class Instituto extends Component {
 
 	//Métodos para navegar entre as páginas da lista exibida
 	goToFirstPage = () => {
-		if(this.state.currentPage != 0){
+		if(this.state.currentPage !== 0){
 			this.state.currentPage = 0;
 			this.fillOrSearch();
 		}
@@ -151,7 +161,7 @@ export default class Instituto extends Component {
 	}
 
 	goToLastPage = () => {
-		if(this.state.currentPage != this.state.lastPage){
+		if(this.state.currentPage !== this.state.lastPage){
 			this.state.currentPage = this.state.lastPage;
 			this.fillOrSearch();
 		}
@@ -421,6 +431,11 @@ export default class Instituto extends Component {
 								<p className='d-inline ps-2 pe-2 fs-6 align-middle'>{this.state.currentPage+1}</p>
 								<button onClick={this.goToNextPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-right"></i></button>
 								<button onClick={this.goToLastPage} className='btn btn-light ps-1 pe-1'><i className="bi bi-chevron-double-right"></i></button>
+							</div>
+						</div>
+						<div className='row'>
+							<div className='col-12 text-end'>
+								<p className='fw-lighter font-small d-inline'>Exibindo {this.state.displayedItens} item(ns) de {this.state.totalItens}</p>
 							</div>
 						</div>
 					</div>
