@@ -372,7 +372,7 @@ export default class Instituto extends Component {
 			<div className="row">
 					<div className="col-9 mx-auto">
 						<button type="button" className="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#insertionModal" onClick={this.beginInsertion}><i className="bi bi-plus-circle-dotted fs-6 me-2"></i>Adicionar</button>
-						<table className="table table-bordered table-hover" id="data-table">
+						<table className="table table-bordered table-hover" id="data-table-institute">
 							<thead className="text-center table-dark">
 								<tr>
 									<th scope='col'></th>

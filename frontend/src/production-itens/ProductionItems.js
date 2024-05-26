@@ -26,7 +26,6 @@ export default class ItensProducao extends Component {
 
   searchDatePickerStartDateChange = (date) => {	
 		this.setState({startDate : date});
-    console.log(this.state.institutes);
 	}
 
   searchDatePickerEndDateChange = (date) => {	
@@ -44,11 +43,6 @@ export default class ItensProducao extends Component {
 
   searchComboProductionTypeChange = (event) => {	
 		this.setState({productionType : event.target.options[event.target.selectedIndex].value});
-	}
-
-  itensQuantityComboChange = (event) => {
-		this.clearPagination();
-		this.setState({itensPerPage : event.target.options[event.target.selectedIndex].value}, () => this.fillList());
 	}
 
   productionItemsCheckboxChange = (id) => {
@@ -89,7 +83,6 @@ export default class ItensProducao extends Component {
 		.then((response) => response.json())
 		.then((data) => {
       this.setState({ institutes: data }); // Atualiza o estado com os dados dos institutos
-      console.log(this.state.institutes);
     })
     .catch((error) => {
       console.error('Erro ao buscar institutos:', error);
@@ -114,13 +107,12 @@ export default class ItensProducao extends Component {
     if(this.state.selectedResearcherId != "all" && this.state.selectedResearcherId != null){
       url+= `&idResearcher=${this.state.selectedResearcherId}`
     }
-
     console.log(url)
     fetch(url)
     .then((response) => response.json())
     .then((json) => {
       this.state.lastPage = Number(json.totalPages) - 1;
-      
+      console.log(json);
       var data = {
         productionItems : json.content,
         pageable : json.pageable
@@ -130,6 +122,7 @@ export default class ItensProducao extends Component {
     .then((data) =>  {
       this.setState({productionItems : data.productionItems});
       this.setState({currentPage: Number(data.pageable.pageNumber)});
+      console.log(this.state.lastPage)
     })
     .catch(e => {this.clearPagination()})
 	}
@@ -151,14 +144,14 @@ export default class ItensProducao extends Component {
 	goToFirstPage = () => {
 		if(this.state.currentPage != 0){
 			this.state.currentPage = 0;
-			this.fillOrSearch();
+			this.search();
 		}
 	}
 	
 	goToPreviousPage = () => {
 		if(this.state.currentPage > 0){
 			this.state.currentPage--;
-			this.fillOrSearch();
+			this.search();
 		}
 
 	}
@@ -166,7 +159,7 @@ export default class ItensProducao extends Component {
 	goToNextPage = () => {
 		if(this.state.currentPage < this.state.lastPage){
 			this.state.currentPage++;
-			this.fillOrSearch();
+			this.search();
 		}
 
 	}
@@ -174,7 +167,7 @@ export default class ItensProducao extends Component {
 	goToLastPage = () => {
 		if(this.state.currentPage != this.state.lastPage){
 			this.state.currentPage = this.state.lastPage;
-			this.fillOrSearch();
+			this.search();
 		}
 	}
 	//Fim
@@ -192,7 +185,7 @@ export default class ItensProducao extends Component {
 
   itensQuantityComboChange = (event) => {
 		this.clearPagination();
-		this.setState({itensPerPage : event.target.options[event.target.selectedIndex].value}, () => this.fillOrSearch());
+		this.setState({itensPerPage : event.target.options[event.target.selectedIndex].value}, () => this.search());
 	}
 
   componentDidMount() {
