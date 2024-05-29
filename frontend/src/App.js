@@ -5,6 +5,7 @@ import Home from './home/Home'
 import Rodape from './footer/Footer';
 import Instituto from './institute/Institute';
 import Pesquisador from './researcher/Researcher';
+import GeradorGrafo from './graph-generator/GraphGenerator';
 // import { Switch } from 'react-router';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import 'bootstrap';
@@ -29,6 +30,8 @@ class App extends React.Component{
             <Route path="/pesquisador" element={<Pesquisador />}>
             </Route>
             <Route path="/itensProducao" element={<ItensProducao />}>
+            </Route>
+            <Route path="/geradorGrafo" element={<GeradorGrafo />}>
             </Route>
           </Routes>
           <Rodape />
