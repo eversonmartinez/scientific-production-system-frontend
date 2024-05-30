@@ -75,7 +75,7 @@ export default class Instituto extends Component {
 		fetch(url)
 			.then((response) => response.json())
 			.then((json) => {
-				this.state.lastPage = Number(json.totalPages) - 1;
+				this.setState({ lastPage: Number(json.totalPages) - 1});
 
 				var data = {
 					institutes: json.content,
@@ -99,7 +99,7 @@ export default class Instituto extends Component {
 			fetch(url)
 				.then((response) => response.json())
 				.then((json) => {
-					this.state.lastPage = Number(json.totalPages) - 1;
+					this.setState({ lastPage: Number(json.totalPages) - 1});
 
 					var data = {
 						institutes: json.content,
@@ -139,14 +139,14 @@ export default class Instituto extends Component {
 	//Métodos para navegar entre as páginas da lista exibida
 	goToFirstPage = () => {
 		if (this.state.currentPage !== 0) {
-			this.state.currentPage = 0;
+			this.setState({ currentPage: 0});
 			this.fillOrSearch();
 		}
 	}
 
 	goToPreviousPage = () => {
 		if (this.state.currentPage > 0) {
-			this.state.currentPage--;
+			this.setState({currentPage: this.state.currentPage-1});
 			this.fillOrSearch();
 		}
 
@@ -154,7 +154,7 @@ export default class Instituto extends Component {
 
 	goToNextPage = () => {
 		if (this.state.currentPage < this.state.lastPage) {
-			this.state.currentPage++;
+			this.setState({currentPage: this.state.currentPage+1});
 			this.fillOrSearch();
 		}
 
@@ -162,7 +162,7 @@ export default class Instituto extends Component {
 
 	goToLastPage = () => {
 		if (this.state.currentPage !== this.state.lastPage) {
-			this.state.currentPage = this.state.lastPage;
+			this.setState({currentPage:  this.state.lastPage});
 			this.fillOrSearch();
 		}
 	}
@@ -187,9 +187,9 @@ export default class Instituto extends Component {
 	}
 
 	clearPagination = () => {
-		this.state.currentPage = 0;
-		this.state.lastPage = 0;
-		this.state.limit = 20;
+		this.setState({currentPage: 0});
+    	this.setState({lastPage: 0});
+    	this.setState({limit: 20});
 	}
 
 	itensQuantityComboChange = (event) => {
@@ -209,7 +209,7 @@ export default class Instituto extends Component {
 	}
 
 	hideAlert = (alertid) => {
-		alert = document.getElementById(alertid);
+		var alert = document.getElementById(alertid);
 		if (alert)
 			alert.hidden = true;
 	}

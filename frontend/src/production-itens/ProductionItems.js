@@ -75,7 +75,7 @@ export default class ItensProducao extends Component {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        this.state.lastPage = Number(json.totalPages) - 1;
+        this.setState({ lastPage: Number(json.totalPages) - 1});
 
         var data = {
           productionItems: json.content,
@@ -117,17 +117,17 @@ export default class ItensProducao extends Component {
   search = () => {
     let url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate.getFullYear()}&endYear=${this.state.endDate.getFullYear()}&type=${this.state.productionType}`;
 
-    if (this.state.selectedInstituteId != "all" && this.state.selectedInstituteId != null) {
+    if (this.state.selectedInstituteId !== "all" && this.state.selectedInstituteId !== null) {
       url += `&idInstitute=${this.state.selectedInstituteId}`
     }
-    if (this.state.selectedResearcherId != "all" && this.state.selectedResearcherId != null) {
+    if (this.state.selectedResearcherId !== "all" && this.state.selectedResearcherId !== null) {
       url += `&idResearcher=${this.state.selectedResearcherId}`
     }
 
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        this.state.lastPage = Number(json.totalPages) - 1;
+        this.setState({lastPage: Number(json.totalPages) - 1});
         var data = {
           productionItems: json.content,
           pageable: json.pageable,
@@ -159,15 +159,15 @@ export default class ItensProducao extends Component {
 
   //Métodos para navegar entre as páginas da lista exibida
   goToFirstPage = () => {
-    if (this.state.currentPage != 0) {
-      this.state.currentPage = 0;
+    if (this.state.currentPage !== 0) {
+      this.setState({ currentPage: 0});
       this.search();
     }
   }
 
   goToPreviousPage = () => {
     if (this.state.currentPage > 0) {
-      this.state.currentPage--;
+      this.setState({currentPage: this.state.currentPage-1});
       this.search();
     }
 
@@ -175,24 +175,24 @@ export default class ItensProducao extends Component {
 
   goToNextPage = () => {
     if (this.state.currentPage < this.state.lastPage) {
-      this.state.currentPage++;
+      this.setState({currentPage: this.state.currentPage+1});
       this.search();
     }
 
   }
 
   goToLastPage = () => {
-    if (this.state.currentPage != this.state.lastPage) {
-      this.state.currentPage = this.state.lastPage;
+    if (this.state.currentPage !== this.state.lastPage) {
+      this.setState({currentPage:  this.state.lastPage});
       this.search();
     }
   }
   //Fim
 
   clearPagination = () => {
-    this.state.currentPage = 0;
-    this.state.lastPage = 0;
-    this.state.limit = 20;
+    this.setState({currentPage: 0});
+    this.setState({lastPage: 0});
+    this.setState({limit: 20});
   }
 
   searchButtonClicked = () => {
