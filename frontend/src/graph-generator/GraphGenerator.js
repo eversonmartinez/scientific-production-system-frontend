@@ -1,6 +1,54 @@
 import React, { Component } from 'react';
 
 export default class GraphGenerator extends Component {
+
+    state = {
+        institutes: [],
+        selectedInstitute: '',
+        researchers: [],
+        selectedResearcher: '',
+        productionItems: [],
+        verticeType: 'researcher'
+    }
+
+    fillInstitutesCombo = () => {
+        const url = `${window.server}/institute`;
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            this.setState({ institutes: data }); // Atualiza o estado com os dados dos institutos
+          })
+          .catch((error) => {
+            console.error('Erro ao buscar institutos:', error);
+          });
+      }
+    
+    fillResearchersCombo = () => {
+    const url = `${window.server}/researcher`;
+    fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+        this.setState({ researchers: data });
+        })
+    }
+
+    searchComboInstitutesChange = (event) => {
+        this.setState({ selectedInstitute: event.target.options[event.target.selectedIndex].value })
+    }
+
+    searchComboResearchersChange = (event) => {
+        this.setState({ selectedResearcher: event.target.options[event.target.selectedIndex].value })
+    }
+
+    searchComboVerticeTypeChange = (event) => {
+        this.setState({ verticeType: event.target.options[event.target.selectedIndex].value })
+    }
+
+    componentDidMount() {
+        this.fillInstitutesCombo();
+        this.fillResearchersCombo();
+    }
+
     render() {
         return (
             <div className="container mt-5 mb-5">
@@ -13,11 +61,12 @@ export default class GraphGenerator extends Component {
                 <hr />
                 <div className="row mb-3">
                     <div className="col-md-6 d-flex align-items-center">
-                        <label htmlFor="institutes" className="form-label me-2">Institutos:</label>
-                        <select className="form-select" id="institutes">
+                        <label htmlFor="comboInstitutes" className="form-label me-2">Institutos:</label>
+                        <select className="form-select" id="comboInstitutes" defaultValue="all" onChange={this.searchComboInstitutesChange}>
                             <option value="all">Todos</option>
-                            <option value="i1">I1</option>
-                            <option value="i2">I2</option>
+                            {(this.state.institutes != null) && (this.state.institutes.length > 0) && this.state.institutes.map((institute) => 
+                            {return <option key={institute.id} value={institute.id}>{institute.name}</option>})
+                            }
                         </select>
                     </div>
                     <div className="col-md-6 d-flex align-items-center justify-content-end">
@@ -31,16 +80,17 @@ export default class GraphGenerator extends Component {
                 </div>
                 <div className="row mb-3">
                     <div className="col-md-6 d-flex align-items-center">
-                        <label htmlFor="researcher" className="form-label me-2">Pesquisador:</label>
-                        <select className="form-select" id="researcher">
+                        <label htmlFor="comboResearchers" className="form-label me-2">Pesquisador:</label>
+                        <select className="form-select" id="comboResearchers" defaultValue="all" onChange={this.searchComboResearchersChange}>
                             <option value="all">Todos</option>
-                            <option value="jose">José</option>
-                            <option value="maria">Maria</option>
+                            {(this.state.researchers != null) && (this.state.researchers.length > 0) && (this.state.researchers.map((researcher) => {
+                                return <option key={researcher.id} value={researcher.id}>{researcher.name}</option>
+                            }))}
                         </select>
                     </div>
                     <div className="col-md-6 d-flex align-items-center justify-content-end">
                         <label htmlFor="vertexType" className="form-label me-2">Tipo de vértice:</label>
-                        <select className="form-select" id="vertexType">
+                        <select className="form-select" id="vertexType" onChange={this.searchComboVerticeTypeChange}>
                             <option value="researcher">Pesquisador</option>
                             <option value="institute">Instituto</option>
                         </select>
