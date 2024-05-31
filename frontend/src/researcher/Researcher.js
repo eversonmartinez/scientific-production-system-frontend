@@ -8,6 +8,7 @@ export default class Pesquisador extends Component {
     email: "",
     selectedInstituteId: '',
     selectedInstituteName: '',
+    researchers: [],
     institutes: [],
     including: false,
     editing: false,
@@ -112,6 +113,7 @@ export default class Pesquisador extends Component {
       .then((data) => {
         this.setState({ researchers: data.researchers });
         this.setState({ currentPage: Number(data.pageable.pageNumber) });
+        this.setState({ currentOffset: Number(data.pageable.offset)});
         this.setState({ totalItens: data.totalElements, displayedItens: data.numberOfElements });
       })
       .catch(e => { this.clearPagination() })
@@ -136,6 +138,7 @@ export default class Pesquisador extends Component {
         .then((data) => {
           this.setState({ researchers: data.researchers });
           this.setState({ currentPage: Number(data.pageable.pageNumber) });
+          this.setState({ currentOffset: Number(data.pageable.offset)});
           this.setState({ totalItens: data.totalElements, displayedItens: data.numberOfElements });
         })
         .catch(e => { this.clearPagination() })
@@ -508,7 +511,7 @@ export default class Pesquisador extends Component {
           </div>
           <div className='row'>
             <div className='col-12 text-end'>
-              <p className='fw-lighter font-small d-inline'>Exibindo {this.state.displayedItens} item(ns) de {this.state.totalItens}</p>
+              <p className='fw-lighter font-small d-inline'>{(this.state.researchers && this.state.researchers.length > 0) ? ('Exibindo itens ' + (Number(this.state.currentOffset)+Number(1)) + ' ao ' + (Number(this.state.currentOffset)+Number(this.state.displayedItens)) + ' de um total de ' + this.state.totalItens) :  ('Não há itens')}</p>
             </div>
           </div>
         </div>

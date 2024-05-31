@@ -174,7 +174,7 @@ export default class GraphGenerator extends Component {
                         />
                     </div>
                     <div className="col-md-6 d-flex align-items-center justify-content-end">
-                        <label htmlFor="production" className="form-label me-2">Produção:</label>
+                        <label htmlFor="production" className="form-label me-3">Produção:</label>
                         <select className="form-select" id="production" onChange={this.searchComboProductionChange} value={this.state.production}>
                             <option value="all">Todos</option>
                             <option value="book">Livro</option>
@@ -199,7 +199,7 @@ export default class GraphGenerator extends Component {
                         />
                     </div>
                     <div className="col-md-6 d-flex align-items-center justify-content-end">
-                        <label htmlFor="vertexType" className="form-label me-2">Tipo de vértice:</label>
+                        <label htmlFor="vertexType" className="form-label">Tipo de vértice:</label>
                         <select className="form-select" id="vertexType" onChange={this.searchComboVerticeTypeChange}>
                             <option value="researcher">Pesquisador</option>
                             <option value="institute">Instituto</option>

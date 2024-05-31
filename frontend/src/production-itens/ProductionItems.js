@@ -20,6 +20,7 @@ export default class ItensProducao extends Component {
     including: false,
     editing: false,
     currentPage: 0,
+    currentOffset: 0,
     itensPerPage: 20,
     lastPage: 0,
     displayedItens: 0,
@@ -76,7 +77,6 @@ export default class ItensProducao extends Component {
       .then((response) => response.json())
       .then((json) => {
         this.setState({ lastPage: Number(json.totalPages) - 1});
-
         var data = {
           productionItems: json.content,
           pageable: json.pageable,
@@ -88,7 +88,8 @@ export default class ItensProducao extends Component {
       .then((data) => {
         this.setState({ productionItems: data.productionItems });
         this.setState({ currentPage: Number(data.pageable.pageNumber) });
-        this.setState({ totalItens: data.totalElements, displayedItens: data.numberOfElements });
+        this.setState({ currentOffset: Number(data.pageable.offset)});
+        this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
       })
       .catch(e => { this.clearPagination() })
   }
@@ -139,8 +140,9 @@ export default class ItensProducao extends Component {
       .then((data) => {
         this.setState({ productionItems: data.productionItems });
         this.setState({ currentPage: Number(data.pageable.pageNumber) });
-        this.setState({ totalItens: data.totalElements, displayedItens: data.numberOfElements });
-      })
+        this.setState({ currentOffset: Number(data.pageable.offset)});
+        this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
+      }).then(() => {console.log(this.state)})
       .catch(e => { this.clearPagination() })
   }
 
@@ -160,14 +162,14 @@ export default class ItensProducao extends Component {
   //Métodos para navegar entre as páginas da lista exibida
   goToFirstPage = () => {
     if (this.state.currentPage !== 0) {
-      this.setState({ currentPage: 0});
-      this.search();
+      this.setState({ currentPage: 0}, this.search);
     }
   }
 
   goToPreviousPage = () => {
     if (this.state.currentPage > 0) {
-      this.setState({currentPage: this.state.currentPage-1});
+      const goToPage = this.state.currentPage--;
+      this.setState({currentPage: goToPage});
       this.search();
     }
 
@@ -175,7 +177,8 @@ export default class ItensProducao extends Component {
 
   goToNextPage = () => {
     if (this.state.currentPage < this.state.lastPage) {
-      this.setState({currentPage: this.state.currentPage+1});
+      const goToPage = this.state.currentPage++;
+      this.setState({currentPage: goToPage});
       this.search();
     }
 
@@ -183,14 +186,14 @@ export default class ItensProducao extends Component {
 
   goToLastPage = () => {
     if (this.state.currentPage !== this.state.lastPage) {
-      this.setState({currentPage:  this.state.lastPage});
-      this.search();
+      this.setState({currentPage: this.state.lastPage}, this.search);
     }
   }
   //Fim
 
   clearPagination = () => {
     this.setState({currentPage: 0});
+    this.setState({currentOffset: 0});
     this.setState({lastPage: 0});
     this.setState({limit: 20});
   }
@@ -210,8 +213,6 @@ export default class ItensProducao extends Component {
     this.fillInstitutesCombo();
     this.fillResearchersCombo();
   }
-
-
 
   render() {
     return (
@@ -352,7 +353,7 @@ export default class ItensProducao extends Component {
             </div>
             <div className='row'>
               <div className='col-12 text-end'>
-                <p className='fw-lighter font-small d-inline'>Exibindo {this.state.displayedItens} item(ns) de {this.state.totalItens}</p>
+                <p className='fw-lighter font-small d-inline'>{(this.state.productionItems && this.state.productionItems.length > 0) ? ('Exibindo itens ' + (Number(this.state.currentOffset)+Number(1)) + ' ao ' + (Number(this.state.currentOffset)+Number(this.state.displayedItens)) + ' de um total de ' + this.state.totalItens) :  ('Não há itens')}</p>
               </div>
             </div>
           </div>

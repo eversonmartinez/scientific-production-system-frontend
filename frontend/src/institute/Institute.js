@@ -14,6 +14,7 @@ export default class Instituto extends Component {
 		searchTerm: "",
 		field: "all",
 		currentPage: 0,
+		currentOffset: 0,
 		itensPerPage: 20,
 		lastPage: 0,
 		displayedItens: 0,
@@ -88,6 +89,7 @@ export default class Instituto extends Component {
 			.then((data) => {
 				this.setState({ institutes: data.institutes });
 				this.setState({ currentPage: Number(data.pageable.pageNumber) });
+				this.setState({ currentOffset: Number(data.pageable.offset)});
 				this.setState({ totalItens: data.totalElements, displayedItens: data.numberOfElements });
 			})
 			.catch(e => { this.clearPagination() })
@@ -112,9 +114,8 @@ export default class Instituto extends Component {
 				.then((data) => {
 					this.setState({ institutes: data.institutes });
 					this.setState({ currentPage: Number(data.pageable.pageNumber) });
+					this.setState({ currentOffset: Number(data.pageable.offset)});
 					this.setState({ totalItens: data.totalElements, displayedItens: data.numberOfElements });
-					console.log(this.state.totalItens);
-					console.log(this.state.displayedItens);
 				})
 				.catch(e => { this.clearPagination() })
 
@@ -139,14 +140,14 @@ export default class Instituto extends Component {
 	//Métodos para navegar entre as páginas da lista exibida
 	goToFirstPage = () => {
 		if (this.state.currentPage !== 0) {
-			this.setState({ currentPage: 0});
-			this.fillOrSearch();
+			this.setState({ currentPage: 0}, this.fillOrSearch);
 		}
 	}
 
 	goToPreviousPage = () => {
 		if (this.state.currentPage > 0) {
-			this.setState({currentPage: this.state.currentPage-1});
+			const goToPage = this.state.currentPage--;
+			this.setState({currentPage: goToPage});
 			this.fillOrSearch();
 		}
 
@@ -154,7 +155,8 @@ export default class Instituto extends Component {
 
 	goToNextPage = () => {
 		if (this.state.currentPage < this.state.lastPage) {
-			this.setState({currentPage: this.state.currentPage+1});
+			const goToPage = this.state.currentPage++;
+			this.setState({currentPage: goToPage});
 			this.fillOrSearch();
 		}
 
@@ -162,8 +164,8 @@ export default class Instituto extends Component {
 
 	goToLastPage = () => {
 		if (this.state.currentPage !== this.state.lastPage) {
-			this.setState({currentPage:  this.state.lastPage});
-			this.fillOrSearch();
+			const goToPage = this.state.lastPage
+			this.setState({currentPage: goToPage}, this.fillOrSearch);
 		}
 	}
 	//Fim
@@ -435,7 +437,7 @@ export default class Instituto extends Component {
 						</div>
 						<div className='row'>
 							<div className='col-12 text-end'>
-								<p className='fw-lighter font-small d-inline'>Exibindo {this.state.displayedItens} item(ns) de {this.state.totalItens}</p>
+								<p className='fw-lighter font-small d-inline'>{(this.state.institutes && this.state.institutes.length > 0) ? ('Exibindo itens ' + (Number(this.state.currentOffset)+Number(1)) + ' ao ' + (Number(this.state.currentOffset)+Number(this.state.displayedItens)) + ' de um total de ' + this.state.totalItens) :  ('Não há itens')}</p>
 							</div>
 						</div>
 					</div>
