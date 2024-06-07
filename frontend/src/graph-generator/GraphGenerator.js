@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Select from 'react-select'
 import makeAnimated from 'react-select/animated'
 
-
+import CytoscapeComponent from 'react-cytoscapejs';
 const animatedComponents = makeAnimated();
 
 export default class GraphGenerator extends Component {
@@ -17,8 +17,356 @@ export default class GraphGenerator extends Component {
         redRange: [1, 1],
         yellowRange: [2, 2],
         greenRange: [3, 3],
-        production: 'all'
+        production: 'all',
+        showGraph: false
+
     }
+
+    graphData = [
+        { data: {
+            "id": 23809873085852,
+            "name": "Rodrigo Salvador Monteiro",
+            "label": "Rodrigo Salvador Monteiro"
+        }},
+        { data: {
+            "id": 24160866319507,
+            "label": "Leonardo da Silva Gasparini"
+        }},
+        { data: {
+            "id": 28876341054325,
+            "label": "Marcelo dos Santos Magalhães"
+        }},
+        { data: {
+            "id": 47810385809553,
+            "label": "Aleksandra Menezes de Oliveira"
+        }},
+        { data: {
+            "id": 53636364868790,
+            "label": "Lismeia Raimundo Soares"
+        }},
+        { data: {
+            "id": 66576690749759,
+            "label": "Gizele da Conceição Soares Martins"
+        }},
+        { data: {
+            "id": 82487176176434,
+            "label": "Marialda Moreira Christoffel"
+        }},
+        { data: {
+            "id": 110662125645595,
+            "label": "Rogério Ferreira de Moraes"
+        }},
+        { data: {
+            "id": 112621452737067,
+            "label": "Vinícius Antônio Gomes Marques"
+        }},
+        { data: {
+            "id": 161902355523060,
+            "label": "Vinicios Batista Pereira"
+        }},
+        { data: {
+            "id": 194631586754988,
+            "label": "Michael Maia Mincarone"
+        }},
+        { data: {
+            "id": 235080730138338,
+            "label": "Rute Ramos da Silva Costa"
+        } },
+        { data: {
+            "id": 263660448893625,
+            "label": "Jussára Mathias Netto Khouri"
+        } },
+        { data: {
+            "id": 329773854976808,
+            "label": "Patricia Regina Affonso de Siqueira"
+        } },
+        { data: {
+            "id": 348923590713594,
+            "label": "Márcio José de Medeiros"
+        } },
+        { data: {
+            "id": 485361810192703,
+            "label": "Luís Claudio de Carvalho"
+        } }, 
+        { data: {
+            "id": 491984479926888,
+            "label": "Rafael Malheiro da Silva do Amaral Ferreira"
+        } },
+        { data: {
+            "id": 549723858731158,
+            "label": "Danielle Marques de Araujo Stapelfeldt"
+        }},
+        { data: {
+            "id": 559800226477492,
+            "label": "Vinícius Albano Araújo"
+        } },
+        { data: {
+            "id": 600549075776976,
+            "label": "Juliana Milanez"
+        } },
+        { data: {
+            "id": 604237405440586,
+            "label": "Glaucimara Riguete de Souza Soares"
+        }},
+        { data: {
+            "id": 658455060876989,
+            "label": "Leonardo Lima dos Santos"
+        } },
+        { data: {
+            "id": 659726776097432,
+            "label": "Karine da Silva Verdoorn"
+        } },
+        { data: {
+            "id": 676650998291996,
+            "label": "Fernando Fernandes Morgado"
+        }},
+        { data: {
+            "id": 692400140993944,
+            "label": "Raquel Silva de Paiva"
+        }},
+        { data: {
+            "id": 743793296062293,
+            "label": "Daniel Cardoso Moraes de Oliveira"
+        } },
+        { data: {
+            "id": 770145420421898,
+            "label": "Lísia Mônica de Souza Gestinari"
+        }},
+        { data: {
+            "id": 781779929562675,
+            "label": "Camila Rolim Laricchia"
+        }},
+        { data: {
+            "id": 814717344017544,
+            "label": "Kate Cerqueira Revoredo"
+        }}
+        ,
+    
+        { data:{
+            "source": 23809873085852,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 23809873085852,
+            "target": 659726776097432
+        }},
+        { data:{
+            "source": 28876341054325,
+            "target": 47810385809553
+        }},
+        { data:{
+            "source": 28876341054325,
+            "target": 743793296062293
+        } },
+        { data: {
+            "source": 47810385809553,
+            "target": 604237405440586
+        } },
+        { data:{
+            "source": 47810385809553,
+            "target": 770145420421898
+        }},
+        { data:{
+            "source": 53636364868790,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 53636364868790,
+            "target": 659726776097432
+        }},
+        { data:{
+            "source": 53636364868790,
+            "target": 47810385809553
+        }},
+        { data: {
+            "source": 53636364868790,
+            "target": 770145420421898
+        }},
+        { data: {
+            "source": 53636364868790,
+            "target": 28876341054325
+        }},
+        { data: {
+            "source": 53636364868790,
+            "target": 658455060876989
+        }},
+        { data:{
+            "source": 66576690749759,
+            "target": 28876341054325
+        }},
+        { data:{
+            "source": 66576690749759,
+            "target": 658455060876989
+        }},
+        { data:{
+            "source": 66576690749759,
+            "target": 235080730138338
+        }},
+        { data: {
+            "source": 82487176176434,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 82487176176434,
+            "target": 659726776097432
+        }},
+        { data: {
+            "source": 82487176176434,
+            "target": 47810385809553
+        }},
+        { data: {
+            "source": 82487176176434,
+            "target": 28876341054325
+        } },
+        { data:{
+            "source": 82487176176434,
+            "target": 658455060876989
+        } },
+        { data:{
+            "source": 82487176176434,
+            "target": 485361810192703
+        }},
+        { data: {
+            "source": 194631586754988,
+            "target": 24160866319507
+        }},
+        { data: {
+            "source": 194631586754988,
+            "target": 659726776097432
+        } },
+        { data:{
+            "source": 194631586754988,
+            "target": 28876341054325
+        } },
+        { data:{
+            "source": 194631586754988,
+            "target": 658455060876989
+        } },
+        { data:{
+            "source": 194631586754988,
+            "target": 600549075776976
+        } },
+        { data: {
+            "source": 194631586754988,
+            "target": 743793296062293
+        }},
+        { data:{
+            "source": 235080730138338,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 235080730138338,
+            "target": 659726776097432
+        }},
+        { data:{
+            "source": 329773854976808,
+            "target": 604237405440586
+        } },
+        { data:{
+            "source": 348923590713594,
+            "target": 600549075776976
+        } },
+        { data:{
+            "source": 348923590713594,
+            "target": 47810385809553
+        }},
+        { data:{
+            "source": 348923590713594,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 348923590713594,
+            "target": 659726776097432
+        }},
+        { data:{
+            "source": 348923590713594,
+            "target": 692400140993944
+        }},
+        { data: {
+            "source": 348923590713594,
+            "target": 770145420421898
+        }},
+        { data:{
+            "source": 348923590713594,
+            "target": 28876341054325
+        }},
+        { data:{
+            "source": 348923590713594,
+            "target": 658455060876989
+        } },
+        { data:{
+            "source": 348923590713594,
+            "target": 110662125645595
+        } },
+        { data:{
+            "source": 549723858731158,
+            "target": 110662125645595
+        } },
+        { data:{
+            "source": 549723858731158,
+            "target": 47810385809553
+        } },
+        { data:{
+            "source": 549723858731158,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 549723858731158,
+            "target": 659726776097432
+        }},
+        { data: {
+            "source": 559800226477492,
+            "target": 24160866319507
+        }},
+        { data: {
+            "source": 559800226477492,
+            "target": 235080730138338
+        } },
+        { data:{
+            "source": 559800226477492,
+            "target": 659726776097432
+        } },
+        { data:{
+            "source": 659726776097432,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 659726776097432,
+            "target": 600549075776976
+        }},
+        { data:{
+            "source": 659726776097432,
+            "target": 485361810192703
+        }},
+        { data:{
+            "source": 743793296062293,
+            "target": 47810385809553
+        }},
+        { data: {
+            "source": 770145420421898,
+             "target": 28876341054325
+        }},
+        { data: {
+            "source": 770145420421898,
+            "target": 658455060876989
+        }},
+        { data:{
+            "source": 770145420421898,
+            "target": 600549075776976
+        }},
+        { data:{
+            "source": 770145420421898,
+            "target": 24160866319507
+        }},
+        { data:{
+            "source": 770145420421898,
+            "target": 659726776097432
+        }},
+        { data:{
+            "source": 770145420421898,
+            "target": 549723858731158
+        }}
+    ]
 
     destacarOpcaoTodos  = {
         option: (provided, state) => ({
@@ -32,6 +380,10 @@ export default class GraphGenerator extends Component {
             color: state.data.value === 'all' ? 'black' : provided.color,
         }),
     };
+
+    generateGraph = () => {
+        this.setState({showGraph: true})
+    }
 
     fillInstitutesCombo = () => {
         const url = `${window.server}/institute`;
@@ -50,7 +402,7 @@ export default class GraphGenerator extends Component {
     fetch(url)
         .then((response) => response.json())
         .then((data) => {
-        this.setState({ researchers: data });
+            this.setState({ researchers: data });
         })
     }
 
@@ -235,8 +587,75 @@ export default class GraphGenerator extends Component {
                 </table>
                 <div className="row">
                     <div className="col-12 d-flex justify-content-end">
-                        <button className="btn btn-success" onClick={() => console.log(this.state)}>Aplicar</button>
+                        <button className="btn btn-success" onClick={this.generateGraph}>Aplicar</button>
                     </div>
+                </div>
+                <div className='row' id="graph-exhibition">
+                    {this.state.showGraph && (
+                        <CytoscapeComponent
+                            elements={this.graphData}
+                            style={{ width: "100%", height: "400px" }}
+                            //adding a layout
+                            layout={{
+                            name: 'breadthfirst',
+                            fit: true,
+                            directed: true,
+                            padding: 50,
+                            animate: true,
+                            animationDuration: 1000,
+                            avoidOverlap: true,
+                            nodeDimensionsIncludeLabels: false
+                            }}
+                            //adding style sheet
+                            stylesheet={[
+                            {
+                                selector: "node",
+                                style: {
+                                backgroundColor: "#555",
+                                width: 60,
+                                height: 60,
+                                label: "data(label)",
+                                "text-halign": "center",
+                                "text-outline-color": "#555",
+                                "text-outline-width": "2px",
+                                "overlay-padding": "6px",
+                                "z-index": "10"
+                                }
+                            },
+                            {
+                                selector: "node:selected",
+                                style: {
+                                "border-width": "6px",
+                                "border-color": "#AAD8FF",
+                                "border-opacity": "0.5",
+                                "background-color": "#77828C",
+                                "text-outline-color": "#77828C"
+                                }
+                            },
+                            {
+                                selector: "label",
+                                style: {
+                                color: "white",
+                                width: 30,
+                                height: 30,
+                                fontSize: 30
+                                // shape: "rectangle"
+                                }
+                            },
+                            {
+                                selector: "edge",
+                                style: {
+                                width: 3,
+                                // "line-color": "#6774cb",
+                                "line-color": "#AAD8FF",
+                                "target-arrow-color": "#6774cb",
+                                "target-arrow-shape": "triangle",
+                                "curve-style": "bezier"
+                                }
+                            }
+                            ]}
+                        />
+                    )}
                 </div>
             </div>
         );
