@@ -385,6 +385,10 @@ export default class GraphGenerator extends Component {
         this.setState({showGraph: true})
     }
 
+    getCompleteSelectedResearcher = (selectedResearcher) => {
+        return this.state.researchers.find((researcher) => researcher.id === selectedResearcher.value)
+    }
+
     fillInstitutesCombo = () => {
         const url = `${window.server}/institute`;
         fetch(url)
@@ -397,16 +401,26 @@ export default class GraphGenerator extends Component {
           });
       }
     
-    fillResearchersCombo = () => {
-    const url = `${window.server}/researcher`;
-    fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-            this.setState({ researchers: data });
-        })
+    fillResearchersCombo = async () => {
+        const url = `${window.server}/researcher`;
+        return new Promise((resolve) => {
+            fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    this.setState({ researchers: data }, 
+                        resolve); // Indica que a atualização do estado foi concluída
+                })
+            }
+        )
+    }
+    
+    filterResearchersCombo = (institutes) => {
+        const filteredResearchers = this.state.researchers.filter((researcher) => institutes.includes(researcher.institute.id));
+        const filteredSelectedResearchers = this.state.selectedResearchers.filter((researcher) => institutes.includes(this.getCompleteSelectedResearcher(researcher).institute.id));
+        this.setState({researchers: filteredResearchers, selectedResearchers: filteredSelectedResearchers});
     }
 
-    searchComboInstitutesChange = (selectedOptions) => {
+    searchComboInstitutesChange = async (selectedOptions) => {
         // const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
     
         const selectedValues = selectedOptions.map(option => option.value);
@@ -418,6 +432,12 @@ export default class GraphGenerator extends Component {
         // Caso contrário, remover "Todos" da seleção
             this.setState({ selectedInstitutes: selectedOptions.filter(option => option.value !== 'all') });
         }
+
+        await this.fillResearchersCombo();
+
+
+        if(selectedValues.length>0 && !selectedValues.includes('all'))
+            this.filterResearchersCombo(selectedValues);
     }
 
     searchComboProductionChange = (event) => {
