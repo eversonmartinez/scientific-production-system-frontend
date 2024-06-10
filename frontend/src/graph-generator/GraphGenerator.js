@@ -17,9 +17,10 @@ export default class GraphGenerator extends Component {
         redRange: [1, 1],
         yellowRange: [2, 2],
         greenRange: [3, 3],
-        production: 'all',
-        showGraph: false
-
+        productionType: 'all',
+        showGraph: false,
+        graphLayout: 'breadthfirst',
+        graphData: []
     }
 
     graphData = [
@@ -381,8 +382,61 @@ export default class GraphGenerator extends Component {
         }),
     };
 
+    getGraphData = () => {
+        let url = `${window.server}/graph/search?verticeType=${this.state.verticeType}`;
+    
+        if (this.state.productionType && this.state.productionType !== "all") {
+          url += `&productionType=${this.state.productionType}`
+        }
+
+        let data;
+
+        if(this.state.selectedInstitutes && this.state.selectedInstitutes.length > 0){
+            let data = {
+                "institutes": this.state.selectedInstitutes
+              };
+        }
+
+        if(this.state.selectedResearchers && this.state.selectedResearchers.length > 0){
+            let data = {
+                "researchers": this.state.selectedResearchers
+            };
+        }
+
+        if(!data){
+            fetch(url)
+            .then((response) => response.json())
+            .then((json) => json.data())
+            .then((data) => {
+                this.setState({graphData: data});
+            })
+
+            return;
+        }
+
+        let requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+
+        fetch(url, requestOptions)
+            .then((response) => response.json())
+            .then((json) => json.data())
+            .then((data) => {
+                this.setState({graphData: data});
+            })
+    }
+    
     generateGraph = () => {
-        this.setState({showGraph: true})
+        //this.getGraphData();
+
+        if(this.state.showGraph)
+            this.setState({showGraph: false}, () => this.setState({showGraph: true}));
+        else  
+            this.setState({showGraph: true});
     }
 
     getCompleteSelectedResearcher = (selectedResearcher) => {
@@ -441,7 +495,7 @@ export default class GraphGenerator extends Component {
     }
 
     searchComboProductionChange = (event) => {
-        this.setState({ production: event.target.options[event.target.selectedIndex].value })
+        this.setState({ productionType: event.target.options[event.target.selectedIndex].value })
     }
 
     searchComboResearchersChange = (selectedOptions) => {
@@ -514,6 +568,11 @@ export default class GraphGenerator extends Component {
         }
     }
 
+    graphComboLayoutChange = (event) => {
+        this.setState({ graphLayout: event.target.options[event.target.selectedIndex].value })
+        this.setState({ showGraph: false }, () => this.setState({showGraph: true}))
+    }
+
     componentDidMount() {
         this.fillInstitutesCombo();
         this.fillResearchersCombo();
@@ -547,7 +606,7 @@ export default class GraphGenerator extends Component {
                     </div>
                     <div className="col-md-6 d-flex align-items-center justify-content-end">
                         <label htmlFor="production" className="form-label me-3">Produção:</label>
-                        <select className="form-select" id="production" onChange={this.searchComboProductionChange} value={this.state.production}>
+                        <select className="form-select" id="production" onChange={this.searchComboProductionChange} value={this.state.productionType}>
                             <option value="all">Todos</option>
                             <option value="book">Livro</option>
                             <option value="article">Artigo</option>
@@ -612,14 +671,26 @@ export default class GraphGenerator extends Component {
                 </div>
                 <div className='row' id="graph-exhibition">
                     {this.state.showGraph && (
+                        <div>
+                            <label htmlFor="graphLayout" className="form-label">Layout:</label>
+                            <select id="graphLayout" class="form-select" aria-label="Selecione o layout" value={this.state.graphLayout} onChange={this.graphComboLayoutChange}>
+                                <option selected value="breadthfirst">Breadthfirst</option>
+                                <option value="random">Random</option>
+                                <option value="grid">Grid</option>
+                                <option value="circle">Circle</option>
+                                <option value="concentric">Concentric</option>
+                            </select>
                         <CytoscapeComponent
                             elements={this.graphData}
-                            style={{ width: "100%", height: "400px" }}
+                            style={{ width: "100%", height: "700px" }}
+                            zoomingEnabled = {true}
+                            maxZoom={3}
+                            minZoom={0.3}
                             //adding a layout
                             layout={{
-                            name: 'breadthfirst',
+                            name: this.state.graphLayout,
                             fit: true,
-                            directed: true,
+                            directed: false,
                             padding: 50,
                             animate: true,
                             animationDuration: 1000,
@@ -669,12 +740,12 @@ export default class GraphGenerator extends Component {
                                 // "line-color": "#6774cb",
                                 "line-color": "#AAD8FF",
                                 "target-arrow-color": "#6774cb",
-                                "target-arrow-shape": "triangle",
                                 "curve-style": "bezier"
                                 }
                             }
                             ]}
                         />
+                    </div>
                     )}
                 </div>
             </div>

@@ -142,7 +142,7 @@ export default class ItensProducao extends Component {
         this.setState({ currentPage: Number(data.pageable.pageNumber) });
         this.setState({ currentOffset: Number(data.pageable.offset)});
         this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
-      }).then(() => {console.log(this.state)})
+      })
       .catch(e => { this.clearPagination() })
   }
 
