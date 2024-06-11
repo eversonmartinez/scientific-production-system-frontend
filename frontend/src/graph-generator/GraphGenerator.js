@@ -598,7 +598,7 @@ export default class GraphGenerator extends Component {
                             }
                         </select> */}
                         <Select id="comboInstitutes" closeMenuOnSelect={false} components={animatedComponents} isMulti 
-                            options={[{ value: 'all', label: 'Todos' }, ...this.state.institutes.map(institute => ({value: institute.id, label: institute.name}))]}
+                            options={[{ value: 'all', label: 'Todos' }, ...this.state.researchers.length>0 ? this.state.institutes.map(institute => ({value: institute.id, label: institute.name})) : []]}
                             value={this.state.selectedInstitutes} onChange={this.searchComboInstitutesChange}
                             placeholder="Selecione institutos..." styles={this.destacarOpcaoTodos}
                             
@@ -623,7 +623,7 @@ export default class GraphGenerator extends Component {
                             }))}
                         </select> */}
                         <Select id="comboResearchers" closeMenuOnSelect={false} components={animatedComponents} isMulti 
-                            options={[{ value: 'all', label: 'Todos' }, ...this.state.researchers.map(researcher => ({value: researcher.id, label: researcher.name}))]}
+                            options={[{ value: 'all', label: 'Todos' }, ...this.state.researchers.length>0? this.state.researchers.map(researcher => ({value: researcher.id, label: researcher.name})) : []]}
                             value={this.state.selectedResearchers} onChange={this.searchComboResearchersChange}
                             placeholder="Selecione pesquisadores..." styles={this.destacarOpcaoTodos}
                             
