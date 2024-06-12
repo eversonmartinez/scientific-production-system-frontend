@@ -555,63 +555,78 @@ export default class GraphGenerator extends Component {
     };
 
     getGraphData = async() => {
-        let url = `${window.server}/graph`
-        
-        //?verticeType=${this.state.verticeType}`;
-    
-        //if (this.state.productionType && this.state.productionType !== "all") {
-        //  url += `&productionType=${this.state.productionType}`
+        let url = `${window.server}/graph`;
+
+        if (this.state.productionType && this.state.productionType !== "all") {
+            if(url.includes('?'))
+                url += `&productionType=${this.state.productionType}`;
+            else
+                url += `?productionType=${this.state.productionType}`;
+        }
+
+        if(this.state.verticeType && this.state.verticeType !== "researcher"){
+            if(url.includes('?'))
+                url += `&verticeType=${this.state.verticeType}`;
+            else
+                url += `?verticeType=${this.state.verticeType}`;
+        }
+
+        let data;
+
+        let selectedInstitutes = this.state.selectedInstitutes.map((selected) => selected.value?selected.value:selected)
+        let selectedResearchers = this.state.selectedResearchers.map((selected) => selected.value?selected.value:selected)
+
+        //TODO: Descomentar o trecho abaixo para a pesquisa filtrada por pesquisador funcionar
+        // //Se não tiverem nem institutos nem pesquisadores selecionados, entende-se que a seleção será de todos. Por isso, não entrará em nenhuma condição de filtro abaixo
+        // if(selectedInstitutes.length > 0 || selectedResearchers.length > 0){
+            
+        //     //Se os dois estiverem marcados para selecionar todos, não é necessário entrar em condição também
+        //     if(!(selectedInstitutes.includes("all") && selectedResearchers.includes("all"))){
+                
+        //         //Se os pesquisadores não estiverem marcados como "todos" e tiverem alguma seleção eles entrão nessa condição
+        //         if(!selectedResearchers.includes("all") && selectedResearchers.length>0){
+        //             data = {
+        //                 "researchers": selectedResearchers
+        //             };
+        //         }
+
+        //         //Se os institutos não estiverem marcados como todos ao mesmo tempo que os pesquisadores estão vazio, a condição será a seguinte:
+        //         else if(!selectedInstitutes.includes("all") && selectedResearchers.length>0){
+        //             data = {
+        //                 "researchers": this.state.researchers.filter((researcher) => selectedInstitutes.includes(researcher.institute.id))
+        //             };
+        //         }
+
+        //     }
+        // }
+
+        //if(data){
+            // const requestOptions = {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify(data)
+            // };
+
+            // fetch(url, requestOptions)
+            //     .then((response) => response.json())
+            //     .then((json) => json.data())
+            //     .then((data) => {
+            //         return data;
+            //     })
         //}
+        
+        // //else:
 
-        // let data;
-
-        // if(this.state.selectedInstitutes && this.state.selectedInstitutes.length > 0){
-        //     let data = {
-        //         "institutes": this.state.selectedInstitutes
-        //       };
-        // }
-
-        // if(this.state.selectedResearchers && this.state.selectedResearchers.length > 0){
-        //     let data = {
-        //         "researchers": this.state.selectedResearchers
-        //     };
-        // }
-
-       // if(!data){
-            return fetch(url)
+        return fetch(url)
             .then((response) => 
                 response.json()
             )
-            .then((json) => {return json;})
-            // .then((data) => {
-            //     console.log("aq")
-            //     return data;
-            // })
-
-            //return;
-       // }
-
-        // let requestOptions = {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(data)
-        // };
-
-        // fetch(url, requestOptions)
-        //     .then((response) => response.json())
-        //     .then((json) => json.data())
-        //     .then((data) => {
-        //         return data;
-        //     })
-        
-        
         
     }
     
     transformGraphData = (graphData) => {
-        console.log(graphData.Object);
         const nodes = graphData.nodes.map(vertex => ({
             data: {
                 id: vertex.id,
@@ -636,7 +651,6 @@ export default class GraphGenerator extends Component {
 
         this.setState({graphData: this.transformGraphData(graphData)});
 
-        //TODO: O método abaixo deve ser chamado dentro de getGraph, pois é responsável por converter o grafo advindo do banco de dados.
         //const newGraphData = this.transformGraphData(this.graphData);
 
         if(this.state.showGraph)
@@ -678,7 +692,7 @@ export default class GraphGenerator extends Component {
     
     filterResearchersCombo = (institutes) => {
         const filteredResearchers = this.state.researchers.filter((researcher) => institutes.includes(researcher.institute.id));
-        const filteredSelectedResearchers = this.state.selectedResearchers.filter((researcher) => institutes.includes(this.getCompleteSelectedResearcher(researcher).institute.id));
+        const filteredSelectedResearchers = this.state.selectedResearchers.filter((researcher) => researcher.value==="all"||institutes.includes(this.getCompleteSelectedResearcher(researcher).institute.id)?true: false);
         this.setState({researchers: filteredResearchers, selectedResearchers: filteredSelectedResearchers});
     }
 
@@ -809,7 +823,6 @@ export default class GraphGenerator extends Component {
                             options={[{ value: 'all', label: 'Todos' }, ...this.state.researchers.length>0 ? this.state.institutes.map(institute => ({value: institute.id, label: institute.name})) : []]}
                             value={this.state.selectedInstitutes} onChange={this.searchComboInstitutesChange}
                             placeholder="Selecione institutos..." styles={this.destacarOpcaoTodos}
-                            
                         />
                     </div>
                     <div className="col-md-6 d-flex align-items-center justify-content-end">
