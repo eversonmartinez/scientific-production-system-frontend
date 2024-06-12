@@ -554,56 +554,64 @@ export default class GraphGenerator extends Component {
         }),
     };
 
-    getGraphData = () => {
-        let url = `${window.server}/graph/search?verticeType=${this.state.verticeType}`;
+    getGraphData = async() => {
+        let url = `${window.server}/graph`
+        
+        //?verticeType=${this.state.verticeType}`;
     
-        if (this.state.productionType && this.state.productionType !== "all") {
-          url += `&productionType=${this.state.productionType}`
-        }
+        //if (this.state.productionType && this.state.productionType !== "all") {
+        //  url += `&productionType=${this.state.productionType}`
+        //}
 
-        let data;
+        // let data;
 
-        if(this.state.selectedInstitutes && this.state.selectedInstitutes.length > 0){
-            let data = {
-                "institutes": this.state.selectedInstitutes
-              };
-        }
+        // if(this.state.selectedInstitutes && this.state.selectedInstitutes.length > 0){
+        //     let data = {
+        //         "institutes": this.state.selectedInstitutes
+        //       };
+        // }
 
-        if(this.state.selectedResearchers && this.state.selectedResearchers.length > 0){
-            let data = {
-                "researchers": this.state.selectedResearchers
-            };
-        }
+        // if(this.state.selectedResearchers && this.state.selectedResearchers.length > 0){
+        //     let data = {
+        //         "researchers": this.state.selectedResearchers
+        //     };
+        // }
 
-        if(!data){
-            fetch(url)
-            .then((response) => response.json())
-            .then((json) => json.data())
-            .then((data) => {
-                this.setState({graphData: data});
-            })
+       // if(!data){
+            return fetch(url)
+            .then((response) => 
+                response.json()
+            )
+            .then((json) => {return json;})
+            // .then((data) => {
+            //     console.log("aq")
+            //     return data;
+            // })
 
-            return;
-        }
+            //return;
+       // }
 
-        let requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        };
+        // let requestOptions = {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify(data)
+        // };
 
-        fetch(url, requestOptions)
-            .then((response) => response.json())
-            .then((json) => json.data())
-            .then((data) => {
-                this.setState({graphData: data});
-            })
+        // fetch(url, requestOptions)
+        //     .then((response) => response.json())
+        //     .then((json) => json.data())
+        //     .then((data) => {
+        //         return data;
+        //     })
+        
+        
+        
     }
     
     transformGraphData = (graphData) => {
-
+        console.log(graphData.Object);
         const nodes = graphData.nodes.map(vertex => ({
             data: {
                 id: vertex.id,
@@ -622,18 +630,21 @@ export default class GraphGenerator extends Component {
         return [...nodes, ...edges];
     }
 
-    generateGraph = () => {
-        //this.getGraphData();
+    generateGraph = async() => {
+        const graphData = await this.getGraphData();
+        
+
+        this.setState({graphData: this.transformGraphData(graphData)});
 
         //TODO: O método abaixo deve ser chamado dentro de getGraph, pois é responsável por converter o grafo advindo do banco de dados.
-        const newGraphData = this.transformGraphData(this.graphData);
+        //const newGraphData = this.transformGraphData(this.graphData);
 
         if(this.state.showGraph)
             this.setState({showGraph: false}, () => this.setState({showGraph: true}));
         else  
             this.setState({showGraph: true});
         
-        this.graphData = newGraphData;
+        //this.graphData = newGraphData;
     }
 
     getCompleteSelectedResearcher = (selectedResearcher) => {
@@ -880,7 +891,7 @@ export default class GraphGenerator extends Component {
                                 </select>
                             </div>
                         <CytoscapeComponent
-                            elements={this.graphData}
+                            elements={this.state.graphData}
                             style={{ width: "100%", height: "700px" }}
                             zoomingEnabled = {true}
                             maxZoom={3}
