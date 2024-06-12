@@ -23,351 +23,523 @@ export default class GraphGenerator extends Component {
         graphData: []
     }
 
-    graphData = [
-        { data: {
-            "id": 23809873085852,
-            "name": "Rodrigo Salvador Monteiro",
-            "label": "Rodrigo Salvador Monteiro"
-        }},
-        { data: {
-            "id": 24160866319507,
-            "label": "Leonardo da Silva Gasparini"
-        }},
-        { data: {
-            "id": 28876341054325,
-            "label": "Marcelo dos Santos Magalhães"
-        }},
-        { data: {
-            "id": 47810385809553,
-            "label": "Aleksandra Menezes de Oliveira"
-        }},
-        { data: {
-            "id": 53636364868790,
-            "label": "Lismeia Raimundo Soares"
-        }},
-        { data: {
-            "id": 66576690749759,
-            "label": "Gizele da Conceição Soares Martins"
-        }},
-        { data: {
-            "id": 82487176176434,
-            "label": "Marialda Moreira Christoffel"
-        }},
-        { data: {
-            "id": 110662125645595,
-            "label": "Rogério Ferreira de Moraes"
-        }},
-        { data: {
-            "id": 112621452737067,
-            "label": "Vinícius Antônio Gomes Marques"
-        }},
-        { data: {
-            "id": 161902355523060,
-            "label": "Vinicios Batista Pereira"
-        }},
-        { data: {
-            "id": 194631586754988,
-            "label": "Michael Maia Mincarone"
-        }},
-        { data: {
-            "id": 235080730138338,
-            "label": "Rute Ramos da Silva Costa"
-        } },
-        { data: {
-            "id": 263660448893625,
-            "label": "Jussára Mathias Netto Khouri"
-        } },
-        { data: {
-            "id": 329773854976808,
-            "label": "Patricia Regina Affonso de Siqueira"
-        } },
-        { data: {
-            "id": 348923590713594,
-            "label": "Márcio José de Medeiros"
-        } },
-        { data: {
-            "id": 485361810192703,
-            "label": "Luís Claudio de Carvalho"
-        } }, 
-        { data: {
-            "id": 491984479926888,
-            "label": "Rafael Malheiro da Silva do Amaral Ferreira"
-        } },
-        { data: {
-            "id": 549723858731158,
-            "label": "Danielle Marques de Araujo Stapelfeldt"
-        }},
-        { data: {
-            "id": 559800226477492,
-            "label": "Vinícius Albano Araújo"
-        } },
-        { data: {
-            "id": 600549075776976,
-            "label": "Juliana Milanez"
-        } },
-        { data: {
-            "id": 604237405440586,
-            "label": "Glaucimara Riguete de Souza Soares"
-        }},
-        { data: {
-            "id": 658455060876989,
-            "label": "Leonardo Lima dos Santos"
-        } },
-        { data: {
-            "id": 659726776097432,
-            "label": "Karine da Silva Verdoorn"
-        } },
-        { data: {
-            "id": 676650998291996,
-            "label": "Fernando Fernandes Morgado"
-        }},
-        { data: {
-            "id": 692400140993944,
-            "label": "Raquel Silva de Paiva"
-        }},
-        { data: {
-            "id": 743793296062293,
-            "label": "Daniel Cardoso Moraes de Oliveira"
-        } },
-        { data: {
-            "id": 770145420421898,
-            "label": "Lísia Mônica de Souza Gestinari"
-        }},
-        { data: {
-            "id": 781779929562675,
-            "label": "Camila Rolim Laricchia"
-        }},
-        { data: {
-            "id": 814717344017544,
-            "label": "Kate Cerqueira Revoredo"
-        }}
-        ,
-    
-        { data:{
-            "source": 23809873085852,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 23809873085852,
-            "target": 659726776097432
-        }},
-        { data:{
-            "source": 28876341054325,
-            "target": 47810385809553
-        }},
-        { data:{
-            "source": 28876341054325,
-            "target": 743793296062293
-        } },
-        { data: {
-            "source": 47810385809553,
-            "target": 604237405440586
-        } },
-        { data:{
-            "source": 47810385809553,
-            "target": 770145420421898
-        }},
-        { data:{
-            "source": 53636364868790,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 53636364868790,
-            "target": 659726776097432
-        }},
-        { data:{
-            "source": 53636364868790,
-            "target": 47810385809553
-        }},
-        { data: {
-            "source": 53636364868790,
-            "target": 770145420421898
-        }},
-        { data: {
-            "source": 53636364868790,
-            "target": 28876341054325
-        }},
-        { data: {
-            "source": 53636364868790,
-            "target": 658455060876989
-        }},
-        { data:{
-            "source": 66576690749759,
-            "target": 28876341054325
-        }},
-        { data:{
-            "source": 66576690749759,
-            "target": 658455060876989
-        }},
-        { data:{
-            "source": 66576690749759,
-            "target": 235080730138338
-        }},
-        { data: {
-            "source": 82487176176434,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 82487176176434,
-            "target": 659726776097432
-        }},
-        { data: {
-            "source": 82487176176434,
-            "target": 47810385809553
-        }},
-        { data: {
-            "source": 82487176176434,
-            "target": 28876341054325
-        } },
-        { data:{
-            "source": 82487176176434,
-            "target": 658455060876989
-        } },
-        { data:{
-            "source": 82487176176434,
-            "target": 485361810192703
-        }},
-        { data: {
-            "source": 194631586754988,
-            "target": 24160866319507
-        }},
-        { data: {
-            "source": 194631586754988,
-            "target": 659726776097432
-        } },
-        { data:{
-            "source": 194631586754988,
-            "target": 28876341054325
-        } },
-        { data:{
-            "source": 194631586754988,
-            "target": 658455060876989
-        } },
-        { data:{
-            "source": 194631586754988,
-            "target": 600549075776976
-        } },
-        { data: {
-            "source": 194631586754988,
-            "target": 743793296062293
-        }},
-        { data:{
-            "source": 235080730138338,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 235080730138338,
-            "target": 659726776097432
-        }},
-        { data:{
-            "source": 329773854976808,
-            "target": 604237405440586
-        } },
-        { data:{
-            "source": 348923590713594,
-            "target": 600549075776976
-        } },
-        { data:{
-            "source": 348923590713594,
-            "target": 47810385809553
-        }},
-        { data:{
-            "source": 348923590713594,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 348923590713594,
-            "target": 659726776097432
-        }},
-        { data:{
-            "source": 348923590713594,
-            "target": 692400140993944
-        }},
-        { data: {
-            "source": 348923590713594,
-            "target": 770145420421898
-        }},
-        { data:{
-            "source": 348923590713594,
-            "target": 28876341054325
-        }},
-        { data:{
-            "source": 348923590713594,
-            "target": 658455060876989
-        } },
-        { data:{
-            "source": 348923590713594,
-            "target": 110662125645595
-        } },
-        { data:{
-            "source": 549723858731158,
-            "target": 110662125645595
-        } },
-        { data:{
-            "source": 549723858731158,
-            "target": 47810385809553
-        } },
-        { data:{
-            "source": 549723858731158,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 549723858731158,
-            "target": 659726776097432
-        }},
-        { data: {
-            "source": 559800226477492,
-            "target": 24160866319507
-        }},
-        { data: {
-            "source": 559800226477492,
-            "target": 235080730138338
-        } },
-        { data:{
-            "source": 559800226477492,
-            "target": 659726776097432
-        } },
-        { data:{
-            "source": 659726776097432,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 659726776097432,
-            "target": 600549075776976
-        }},
-        { data:{
-            "source": 659726776097432,
-            "target": 485361810192703
-        }},
-        { data:{
-            "source": 743793296062293,
-            "target": 47810385809553
-        }},
-        { data: {
-            "source": 770145420421898,
-             "target": 28876341054325
-        }},
-        { data: {
-            "source": 770145420421898,
-            "target": 658455060876989
-        }},
-        { data:{
-            "source": 770145420421898,
-            "target": 600549075776976
-        }},
-        { data:{
-            "source": 770145420421898,
-            "target": 24160866319507
-        }},
-        { data:{
-            "source": 770145420421898,
-            "target": 659726776097432
-        }},
-        { data:{
-            "source": 770145420421898,
-            "target": 549723858731158
-        }}
-    ]
+    graphData = {
+        "nodes": [
+            {
+                "id": 23809873085852,
+                "label": "Rodrigo Salvador Monteiro"
+            },
+            {
+                "id": 24160866319507,
+                "label": "Leonardo da Silva Gasparini"
+            },
+            {
+                "id": 28876341054325,
+                "label": "Marcelo dos Santos Magalhães"
+            },
+            {
+                "id": 47810385809553,
+                "label": "Aleksandra Menezes de Oliveira"
+            },
+            {
+                "id": 53636364868790,
+                "label": "Lismeia Raimundo Soares"
+            },
+            {
+                "id": 66576690749759,
+                "label": "Gizele da Conceição Soares Martins"
+            },
+            {
+                "id": 82487176176434,
+                "label": "Marialda Moreira Christoffel"
+            },
+            {
+                "id": 110662125645595,
+                "label": "Rogério Ferreira de Moraes"
+            },
+            {
+                "id": 112621452737067,
+                "label": "Vinícius Antônio Gomes Marques"
+            },
+            {
+                "id": 161902355523060,
+                "label": "Vinicios Batista Pereira"
+            },
+            {
+                "id": 194631586754988,
+                "label": "Michael Maia Mincarone"
+            },
+            {
+                "id": 235080730138338,
+                "label": "Rute Ramos da Silva Costa"
+            },
+            {
+                "id": 263660448893625,
+                "label": "Jussára Mathias Netto Khouri"
+            },
+            {
+                "id": 329773854976808,
+                "label": "Patricia Regina Affonso de Siqueira"
+            },
+            {
+                "id": 348923590713594,
+                "label": "Márcio José de Medeiros"
+            },
+            {
+                "id": 485361810192703,
+                "label": "Luís Claudio de Carvalho"
+            },
+            {
+                "id": 491984479926888,
+                "label": "Rafael Malheiro da Silva do Amaral Ferreira"
+            },
+            {
+                "id": 549723858731158,
+                "label": "Danielle Marques de Araujo Stapelfeldt"
+            },
+            {
+                "id": 559800226477492,
+                "label": "Vinícius Albano Araújo"
+            },
+            {
+                "id": 600549075776976,
+                "label": "Juliana Milanez"
+            },
+            {
+                "id": 604237405440586,
+                "label": "Glaucimara Riguete de Souza Soares"
+            },
+            {
+                "id": 658455060876989,
+                "label": "Leonardo Lima dos Santos"
+            },
+            {
+                "id": 659726776097432,
+                "label": "Karine da Silva Verdoorn"
+            },
+            {
+                "id": 676650998291996,
+                "label": "Fernando Fernandes Morgado"
+            },
+            {
+                "id": 692400140993944,
+                "label": "Raquel Silva de Paiva"
+            },
+            {
+                "id": 743793296062293,
+                "label": "Daniel Cardoso Moraes de Oliveira"
+            },
+            {
+                "id": 770145420421898,
+                "label": "Lísia Mônica de Souza Gestinari"
+            },
+            {
+                "id": 781779929562675,
+                "label": "Camila Rolim Laricchia"
+            },
+            {
+                "id": 814717344017544,
+                "label": "Kate Cerqueira Revoredo"
+            }
+        ],
+        "edges": [
+            {
+                "source": 23809873085852,
+                "target": 604237405440586,
+                "weight": 1.0
+            },
+            {
+                "source": 23809873085852,
+                "target": 24160866319507,
+                "weight": 1.0
+            },
+            {
+                "source": 23809873085852,
+                "target": 28876341054325,
+                "weight": 1.0
+            },
+            {
+                "source": 24160866319507,
+                "target": 194631586754988,
+                "weight": 8.0
+            },
+            {
+                "source": 28876341054325,
+                "target": 47810385809553,
+                "weight": 3.0
+            },
+            {
+                "source": 28876341054325,
+                "target": 110662125645595,
+                "weight": 1.0
+            },
+            {
+                "source": 47810385809553,
+                "target": 604237405440586,
+                "weight": 13.0
+            },
+            {
+                "source": 47810385809553,
+                "target": 743793296062293,
+                "weight": 24.0
+            },
+            {
+                "source": 53636364868790,
+                "target": 24160866319507,
+                "weight": 5.0
+            },
+            {
+                "source": 53636364868790,
+                "target": 47810385809553,
+                "weight": 2.0
+            },
+            {
+                "source": 53636364868790,
+                "target": 235080730138338,
+                "weight": 1.0
+            },
+            {
+                "source": 53636364868790,
+                "target": 770145420421898,
+                "weight": 3.0
+            },
+            {
+                "source": 53636364868790,
+                "target": 604237405440586,
+                "weight": 1.0
+            },
+            {
+                "source": 53636364868790,
+                "target": 28876341054325,
+                "weight": 1.0
+            },
+            {
+                "source": 66576690749759,
+                "target": 47810385809553,
+                "weight": 1.0
+            },
+            {
+                "source": 66576690749759,
+                "target": 604237405440586,
+                "weight": 1.0
+            },
+            {
+                "source": 66576690749759,
+                "target": 348923590713594,
+                "weight": 7.0
+            },
+            {
+                "source": 66576690749759,
+                "target": 24160866319507,
+                "weight": 1.0
+            },
+            {
+                "source": 66576690749759,
+                "target": 658455060876989,
+                "weight": 1.0
+            },
+            {
+                "source": 66576690749759,
+                "target": 235080730138338,
+                "weight": 1.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 24160866319507,
+                "weight": 24.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 23809873085852,
+                "weight": 1.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 47810385809553,
+                "weight": 5.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 549723858731158,
+                "weight": 1.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 604237405440586,
+                "weight": 3.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 28876341054325,
+                "weight": 17.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 485361810192703,
+                "weight": 3.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 66576690749759,
+                "weight": 2.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 110662125645595,
+                "weight": 2.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 235080730138338,
+                "weight": 2.0
+            },
+            {
+                "source": 82487176176434,
+                "target": 329773854976808,
+                "weight": 4.0
+            },
+            {
+                "source": 194631586754988,
+                "target": 348923590713594,
+                "weight": 1.0
+            },
+            {
+                "source": 194631586754988,
+                "target": 28876341054325,
+                "weight": 3.0
+            },
+            {
+                "source": 194631586754988,
+                "target": 491984479926888,
+                "weight": 1.0
+            },
+            {
+                "source": 194631586754988,
+                "target": 600549075776976,
+                "weight": 5.0
+            },
+            {
+                "source": 194631586754988,
+                "target": 485361810192703,
+                "weight": 1.0
+            },
+            {
+                "source": 194631586754988,
+                "target": 743793296062293,
+                "weight": 3.0
+            },
+            {
+                "source": 235080730138338,
+                "target": 24160866319507,
+                "weight": 18.0
+            },
+            {
+                "source": 329773854976808,
+                "target": 604237405440586,
+                "weight": 8.0
+            },
+            {
+                "source": 329773854976808,
+                "target": 600549075776976,
+                "weight": 2.0
+            },
+            {
+                "source": 329773854976808,
+                "target": 24160866319507,
+                "weight": 1.0
+            },
+            {
+                "source": 329773854976808,
+                "target": 28876341054325,
+                "weight": 2.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 600549075776976,
+                "weight": 1.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 781779929562675,
+                "weight": 1.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 47810385809553,
+                "weight": 8.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 549723858731158,
+                "weight": 1.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 24160866319507,
+                "weight": 3.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 770145420421898,
+                "weight": 1.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 28876341054325,
+                "weight": 2.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 235080730138338,
+                "weight": 1.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 23809873085852,
+                "weight": 1.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 110662125645595,
+                "weight": 1.0
+            },
+            {
+                "source": 348923590713594,
+                "target": 604237405440586,
+                "weight": 1.0
+            },
+            {
+                "source": 485361810192703,
+                "target": 24160866319507,
+                "weight": 3.0
+            },
+            {
+                "source": 485361810192703,
+                "target": 604237405440586,
+                "weight": 1.0
+            },
+            {
+                "source": 549723858731158,
+                "target": 110662125645595,
+                "weight": 3.0
+            },
+            {
+                "source": 549723858731158,
+                "target": 604237405440586,
+                "weight": 1.0
+            },
+            {
+                "source": 549723858731158,
+                "target": 47810385809553,
+                "weight": 1.0
+            },
+            {
+                "source": 549723858731158,
+                "target": 24160866319507,
+                "weight": 1.0
+            },
+            {
+                "source": 559800226477492,
+                "target": 82487176176434,
+                "weight": 7.0
+            },
+            {
+                "source": 559800226477492,
+                "target": 47810385809553,
+                "weight": 2.0
+            },
+            {
+                "source": 559800226477492,
+                "target": 53636364868790,
+                "weight": 1.0
+            },
+            {
+                "source": 559800226477492,
+                "target": 24160866319507,
+                "weight": 2.0
+            },
+            {
+                "source": 559800226477492,
+                "target": 235080730138338,
+                "weight": 1.0
+            },
+            {
+                "source": 559800226477492,
+                "target": 28876341054325,
+                "weight": 1.0
+            },
+            {
+                "source": 600549075776976,
+                "target": 161902355523060,
+                "weight": 1.0
+            },
+            {
+                "source": 604237405440586,
+                "target": 770145420421898,
+                "weight": 57.0
+            },
+            {
+                "source": 604237405440586,
+                "target": 24160866319507,
+                "weight": 1.0
+            },
+            {
+                "source": 659726776097432,
+                "target": 24160866319507,
+                "weight": 6.0
+            },
+            {
+                "source": 659726776097432,
+                "target": 600549075776976,
+                "weight": 6.0
+            },
+            {
+                "source": 659726776097432,
+                "target": 485361810192703,
+                "weight": 1.0
+            },
+            {
+                "source": 659726776097432,
+                "target": 47810385809553,
+                "weight": 1.0
+            },
+            {
+                "source": 659726776097432,
+                "target": 692400140993944,
+                "weight": 1.0
+            },
+            {
+                "source": 743793296062293,
+                "target": 53636364868790,
+                "weight": 1.0
+            },
+            {
+                "source": 770145420421898,
+                "target": 28876341054325,
+                "weight": 2.0
+            },
+            {
+                "source": 770145420421898,
+                "target": 600549075776976,
+                "weight": 1.0
+            },
+            {
+                "source": 770145420421898,
+                "target": 24160866319507,
+                "weight": 1.0
+            },
+            {
+                "source": 770145420421898,
+                "target": 549723858731158,
+                "weight": 1.0
+            },
+            {
+                "source": 770145420421898,
+                "target": 194631586754988,
+                "weight": 1.0
+            }
+        ]
+    }
 
     destacarOpcaoTodos  = {
         option: (provided, state) => ({
@@ -430,13 +602,38 @@ export default class GraphGenerator extends Component {
             })
     }
     
+    transformGraphData = (graphData) => {
+
+        const nodes = graphData.nodes.map(vertex => ({
+            data: {
+                id: vertex.id,
+                label: vertex.label
+            }
+        }));
+
+        const edges = graphData.edges.map(edge => ({
+            data: {
+                source: edge.source,
+                target: edge.target,
+                weight: edge.weight
+            }
+        }));
+
+        return [...nodes, ...edges];
+    }
+
     generateGraph = () => {
         //this.getGraphData();
+
+        //TODO: O método abaixo deve ser chamado dentro de getGraph, pois é responsável por converter o grafo advindo do banco de dados.
+        const newGraphData = this.transformGraphData(this.graphData);
 
         if(this.state.showGraph)
             this.setState({showGraph: false}, () => this.setState({showGraph: true}));
         else  
             this.setState({showGraph: true});
+        
+        this.graphData = newGraphData;
     }
 
     getCompleteSelectedResearcher = (selectedResearcher) => {
@@ -669,17 +866,19 @@ export default class GraphGenerator extends Component {
                         <button className="btn btn-success" onClick={this.generateGraph}>Aplicar</button>
                     </div>
                 </div>
-                <div className='row' id="graph-exhibition">
+                <div className='row m-3' id="graph-exhibition">
                     {this.state.showGraph && (
-                        <div>
-                            <label htmlFor="graphLayout" className="form-label">Layout:</label>
-                            <select id="graphLayout" class="form-select" aria-label="Selecione o layout" value={this.state.graphLayout} onChange={this.graphComboLayoutChange}>
-                                <option selected value="breadthfirst">Breadthfirst</option>
-                                <option value="random">Random</option>
-                                <option value="grid">Grid</option>
-                                <option value="circle">Circle</option>
-                                <option value="concentric">Concentric</option>
-                            </select>
+                        <div className="border rounded p-3">
+                            <div className='col-5'>
+                                <label htmlFor="graphLayout" className="form-label">Layout:</label>
+                                <select id="graphLayout" className="form-select" aria-label="Selecione o layout" value={this.state.graphLayout} onChange={this.graphComboLayoutChange}>
+                                    <option value="breadthfirst">Breadthfirst</option>
+                                    <option value="random">Random</option>
+                                    <option value="grid">Grid</option>
+                                    <option value="circle">Circle</option>
+                                    <option value="concentric">Concentric</option>
+                                </select>
+                            </div>
                         <CytoscapeComponent
                             elements={this.graphData}
                             style={{ width: "100%", height: "700px" }}
@@ -703,14 +902,16 @@ export default class GraphGenerator extends Component {
                                 selector: "node",
                                 style: {
                                 backgroundColor: "#555",
-                                width: 60,
-                                height: 60,
+                                width: 30,
+                                height: 30,
                                 label: "data(label)",
                                 "text-halign": "center",
                                 "text-outline-color": "#555",
-                                "text-outline-width": "2px",
+                                "text-outline-width": "1px",
                                 "overlay-padding": "6px",
-                                "z-index": "10"
+                                "z-index": "10",
+                                color: "white",
+                                "font-size": "12px"
                                 }
                             },
                             {
@@ -724,25 +925,37 @@ export default class GraphGenerator extends Component {
                                 }
                             },
                             {
-                                selector: "label",
-                                style: {
-                                color: "white",
-                                width: 30,
-                                height: 30,
-                                fontSize: 30
-                                // shape: "rectangle"
-                                }
-                            },
-                            {
                                 selector: "edge",
                                 style: {
                                 width: 3,
+                                label: "data(weight)",
+                                color: 'black',
+                                "font-size": 10,
+                                "text-rotation": "autorotate",
                                 // "line-color": "#6774cb",
-                                "line-color": "#AAD8FF",
-                                "target-arrow-color": "#6774cb",
+                                //"line-color": "#AAD8FF",
+                                //"target-arrow-color": "#6774cb",
                                 "curve-style": "bezier"
                                 }
-                            }
+                            },
+                            {
+                                selector: `edge[weight <= ${this.state.redRange[1]}]`,
+                                style: {
+                                  'line-color': '#FF5733'
+                                }
+                              },
+                              {
+                                selector: `edge[weight >= ${this.state.yellowRange[0]}][weight <= ${this.state.yellowRange[1]}]`,
+                                style: {
+                                  'line-color': '#FFDA33'
+                                }
+                              },
+                              {
+                                selector: `edge[weight >= ${this.state.greenRange[0]}][weight <= ${this.state.greenRange[1]}]`,
+                                style: {
+                                  'line-color': '#54D858'
+                                }
+                              }
                             ]}
                         />
                     </div>
