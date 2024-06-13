@@ -308,6 +308,10 @@ export default class Pesquisador extends Component {
       this.showAlertWithMessage('insertion-error-alert', "Um ID de pesquisador deve ser informado!");
       return;
     }
+    if(!isNaN(this.state.id)){
+      this.showAlertWithMessage('insertion-error-alert', "O ID de pesquisador deve ser um número!");
+      return;
+    }
     if (!this.state.selectedInstituteId) {
       this.showAlertWithMessage('insertion-error-alert', "Um instituto deve ser selecionado!");
       return;
