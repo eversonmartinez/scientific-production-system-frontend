@@ -13,7 +13,7 @@ export default class GraphGenerator extends Component {
         researchers: [],
         selectedResearchers: [],
         productionItems: [],
-        verticeType: 'researcher',
+        vertexType: 'researcher',
         redRange: [1, 1],
         yellowRange: [2, 2],
         greenRange: [3, 3],
@@ -564,11 +564,11 @@ export default class GraphGenerator extends Component {
                 url += `?productionType=${this.state.productionType}`;
         }
 
-        if(this.state.verticeType && this.state.verticeType !== "researcher"){
+        if(this.state.vertexType && this.state.vertexType !== "researcher"){
             if(url.includes('?'))
-                url += `&verticeType=${this.state.verticeType}`;
+                url += `&vertexType=${this.state.vertexType}`;
             else
-                url += `?verticeType=${this.state.verticeType}`;
+                url += `?vertexType=${this.state.vertexType}`;
         }
 
         let data;
@@ -577,52 +577,68 @@ export default class GraphGenerator extends Component {
         let selectedResearchers = this.state.selectedResearchers.map((selected) => selected.value?selected.value:selected)
 
         //TODO: Descomentar o trecho abaixo para a pesquisa filtrada por pesquisador funcionar
-        // //Se não tiverem nem institutos nem pesquisadores selecionados, entende-se que a seleção será de todos. Por isso, não entrará em nenhuma condição de filtro abaixo
-        // if(selectedInstitutes.length > 0 || selectedResearchers.length > 0){
-            
-        //     //Se os dois estiverem marcados para selecionar todos, não é necessário entrar em condição também
-        //     if(!(selectedInstitutes.includes("all") && selectedResearchers.includes("all"))){
-                
-        //         //Se os pesquisadores não estiverem marcados como "todos" e tiverem alguma seleção eles entrão nessa condição
-        //         if(!selectedResearchers.includes("all") && selectedResearchers.length>0){
-        //             data = {
-        //                 "researchers": selectedResearchers
-        //             };
-        //         }
+        //Se não tiverem nem institutos nem pesquisadores selecionados, entende-se que a seleção será de todos. Por isso, não entrará em nenhuma condição de filtro abaixo
+        if(selectedInstitutes.length > 0 || selectedResearchers.length > 0){
+         
+            //Se os dois estiverem marcados para selecionar todos, não é necessário entrar em condição também
+            if(!(selectedInstitutes.includes("all") && selectedResearchers.includes("all"))){
 
-        //         //Se os institutos não estiverem marcados como todos ao mesmo tempo que os pesquisadores estão vazio, a condição será a seguinte:
-        //         else if(!selectedInstitutes.includes("all") && selectedResearchers.length>0){
-        //             data = {
-        //                 "researchers": this.state.researchers.filter((researcher) => selectedInstitutes.includes(researcher.institute.id))
-        //             };
-        //         }
+                //Aqui elimina-se as combinações [all com vazio] e [vazio com all], que seriam equivalentes a selecionar todos.
+                if(!(selectedInstitutes.includes("all") && !selectedResearchers.length > 0) && !(!selectedInstitutes.length>0 && selectedResearchers.includes("all"))){
 
-        //     }
+                    //Se os pesquisadores não estiverem marcados como "todos" e tiverem alguma seleção eles entrão nessa condição
+                    if(!selectedResearchers.includes("all") && selectedResearchers.length>0){
+                        data = selectedResearchers
+                         ;
+                    }
+
+                    //Se os institutos não estiverem marcados como todos ao mesmo tempo que os pesquisadores estão vazio, a condição será a seguinte:
+                    else if(!selectedInstitutes.includes("all") && selectedInstitutes.length>0){
+                        data = this.state.researchers.filter((researcher) => selectedInstitutes.includes(researcher.institute.id)).map((researcher) => researcher.id)
+                        ;
+                    }
+
+                }
+            }
+        }
+
+        // if(data){
+        //     const requestOptions = {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify(data)
+        //     };
+
+        //     console.log(url)
+        //     fetch(url, requestOptions)
+        //         .then((response) => response.json())
+        //         .then((json) => json.data())
+        //         .then((data) => {
+        //             return data;
+        //         })
         // }
 
-        //if(data){
-            // const requestOptions = {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
-            //     },
-            //     body: JSON.stringify(data)
-            // };
+        let requestOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                };
 
-            // fetch(url, requestOptions)
-            //     .then((response) => response.json())
-            //     .then((json) => json.data())
-            //     .then((data) => {
-            //         return data;
-            //     })
-        //}
+        if(data)
+            requestOptions.body=JSON.stringify(data);
+
+         return fetch(url, requestOptions)
+                .then((response) => response.json())
         
-        // //else:
+        //else:
 
-        return fetch(url)
-            .then((response) => 
-                response.json()
-            )
+        // return fetch(url)
+        //     .then((response) => 
+        //         response.json()
+        //     )
         
     }
     
@@ -742,8 +758,8 @@ export default class GraphGenerator extends Component {
         }
     }
 
-    searchComboVerticeTypeChange = (event) => {
-        this.setState({ verticeType: event.target.options[event.target.selectedIndex].value })
+    searchComboVertexTypeChange = (event) => {
+        this.setState({ vertexType: event.target.options[event.target.selectedIndex].value })
     }
 
     //Fiz uma espécide de método recursivo. Como a função setState é assíncrona e a verificação só pode ser feita após sua atualização, faz-se necessário passar um método callback
@@ -852,7 +868,7 @@ export default class GraphGenerator extends Component {
                     </div>
                     <div className="col-md-6 d-flex align-items-center justify-content-end">
                         <label htmlFor="vertexType" className="form-label">Tipo de vértice:</label>
-                        <select className="form-select" id="vertexType" onChange={this.searchComboVerticeTypeChange}>
+                        <select className="form-select" id="vertexType" onChange={this.searchComboVertexTypeChange}>
                             <option value="researcher">Pesquisador</option>
                             <option value="institute">Instituto</option>
                         </select>
