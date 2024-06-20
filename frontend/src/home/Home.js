@@ -82,7 +82,9 @@ export default class Home extends Component {
     startDate: new Date(1980, 2, 5, 0, 0, 0),
     endDate: new Date(2024, 2, 5, 0, 0, 0),
     researchers: [],
-    institutes: []
+    institutes: [],
+    totalInstitutes: 0,
+    totalResearchers: 0
   }
 
   destacarOpcaoTodos  = {
@@ -97,6 +99,32 @@ export default class Home extends Component {
         color: state.data.value === 'all' ? 'black' : provided.color,
     }),
   };
+
+  getTotalCounts = () => {
+    let url = `${window.server}/institute/count`;
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ totalInstitutes: data }); // Atualiza o estado com os dados dos institutos
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar institutos:', error);
+      });
+
+    url = `${window.server}/researcher/count`;
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ totalResearchers: data }); // Atualiza o estado com os dados dos institutos
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar pesquisadores:', error);
+      });
+  }
+
+  componentDidMount () {
+    this.getTotalCounts();  
+  }
 
   render() {
     return (
@@ -176,7 +204,7 @@ export default class Home extends Component {
             <div className='card text-center bg-secondary' style={{height: "200px"}}>
               <div className='card-body'>
                 <h2 className='card-title'>Institutos</h2>
-                <p className='card-text align-items-center fw-bold' style={{"font-size": "5em"}}>0</p>
+                <p className='card-text align-items-center fw-bold' style={{"font-size": "5em"}}>{this.state.totalInstitutes}</p>
               </div>
             </div>
           </div>
@@ -184,7 +212,7 @@ export default class Home extends Component {
             <div className='card text-center bg-secondary' style={{height: "200px"}}>
               <div className='card-body'>
                 <h2 className='card-title'>Pesquisadores</h2>
-                <p className='card-text align-items-center fw-bold' style={{"font-size": "5em"}}>0</p>
+                <p className='card-text align-items-center fw-bold' style={{"font-size": "5em"}}>{this.state.totalResearchers}</p>
               </div>
             </div>
           </div>
