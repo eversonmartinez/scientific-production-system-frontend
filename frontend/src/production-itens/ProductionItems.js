@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import '../styles/ProductionItem.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select'
+import makeAnimated from 'react-select/animated'
+const animatedComponents = makeAnimated();
 
 export default class ItensProducao extends Component {
 
@@ -24,8 +27,23 @@ export default class ItensProducao extends Component {
     itensPerPage: 20,
     lastPage: 0,
     displayedItens: 0,
-    totalItens: 0
+    totalItens: 0,
+    selectedInstitutes: [],
+    selectedResearchers: []
   }
+
+  destacarOpcaoTodos  = {
+    option: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.data.value === 'all' ? '#FFD700' : provided.backgroundColor,
+        color: state.data.value === 'all' ? 'black' : provided.color,
+    }),
+    multiValue: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.data.value === 'all' ? '#FFD700' : provided.backgroundColor,
+        color: state.data.value === 'all' ? 'black' : provided.color,
+    }),
+  };
 
   searchDatePickerStartDateChange = (date) => {
     this.setState({ startDate: date });
@@ -35,13 +53,44 @@ export default class ItensProducao extends Component {
     this.setState({ endDate: date });
   }
 
-  searchComboInstituteChange = (event) => {
-    this.setState({ selectedInstituteId: event.target.options[event.target.selectedIndex].value });
+  filterResearchersCombo = (institutes) => {
+    const filteredResearchers = this.state.researchers.filter((researcher) => institutes.includes(researcher.institute.id));
+    const filteredSelectedResearchers = this.state.selectedResearchers.filter((researcher) => researcher.value==="all"||institutes.includes(this.getCompleteSelectedResearcher(researcher).institute.id)?true: false);
+    this.setState({researchers: filteredResearchers, selectedResearchers: filteredSelectedResearchers});
+}
+
+  searchComboInstituteChange = async (selectedOptions) => {
+    //this.setState({ selectedInstituteId: event.target.options[event.target.selectedIndex].value });
     // this.setState({selectedInstituteName : event.target.options[event.target.selectedIndex].});
+
+    const selectedValues = selectedOptions.map(option => option.value);
+
+    if (selectedValues.includes('all')) {
+    // Se "Todos" estiver selecionado, somente ele deve permanecer selecionado
+        this.setState({ selectedInstitutes: [{ value: 'all', label: 'Todos' }] });
+    } else {
+    // Caso contrário, remover "Todos" da seleção
+        this.setState({ selectedInstitutes: selectedOptions.filter(option => option.value !== 'all') });
+    }
+
+    await this.fillResearchersCombo();
+
+
+    if(selectedValues.length>0 && !selectedValues.includes('all'))
+      this.filterResearchersCombo(selectedValues);
   }
 
-  searchComboResearcherChange = (event) => {
-    this.setState({ selectedResearcherId: event.target.options[event.target.selectedIndex].value });
+  searchComboResearcherChange = (selectedOptions) => {
+
+    const selectedValues = selectedOptions.map(option => option.value);
+
+    if (selectedValues.includes('all')) {
+    // Se "Todos" estiver selecionado, somente ele deve permanecer selecionado
+        this.setState({ selectedResearchers: [{ value: 'all', label: 'Todos' }] });
+    } else {
+    // Caso contrário, remover "Todos" da seleção
+        this.setState({ selectedResearchers: selectedOptions.filter(option => option.value !== 'all') });
+    }
   }
 
   searchComboProductionTypeChange = (event) => {
@@ -106,44 +155,108 @@ export default class ItensProducao extends Component {
       });
   }
 
-  fillResearchersCombo = () => {
+  fillResearchersCombo = async () => {
     const url = `${window.server}/researcher`;
-    fetch(url)
+    return new Promise ((resolve) => {
+      fetch(url)
       .then((response) => response.json())
       .then((data) => {
-        this.setState({ researchers: data });
+        this.setState({ researchers: data }, resolve);
       })
+    })
   }
 
   search = () => {
     let url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate.getFullYear()}&endYear=${this.state.endDate.getFullYear()}&type=${this.state.productionType}`;
 
-    if (this.state.selectedInstituteId !== "all" && this.state.selectedInstituteId !== null) {
-      url += `&idInstitute=${this.state.selectedInstituteId}`
-    }
-    if (this.state.selectedResearcherId !== "all" && this.state.selectedResearcherId !== null) {
-      url += `&idResearcher=${this.state.selectedResearcherId}`
+    // if (this.state.selectedInstituteId !== "all" && this.state.selectedInstituteId !== null) {
+    //   url += `&idInstitute=${this.state.selectedInstituteId}`
+    // }
+    // if (this.state.selectedResearcherId !== "all" && this.state.selectedResearcherId !== null) {
+    //   url += `&idResearcher=${this.state.selectedResearcherId}`
+    // }
+
+    let data;
+
+    let selectedInstitutes = this.state.selectedInstitutes.map((selected) => selected.value?selected.value:selected)
+    let selectedResearchers = this.state.selectedResearchers.map((selected) => selected.value?selected.value:selected)
+
+    //TODO: Descomentar o trecho abaixo para a pesquisa filtrada por pesquisador funcionar
+    //Se não tiverem nem institutos nem pesquisadores selecionados, entende-se que a seleção será de todos. Por isso, não entrará em nenhuma condição de filtro abaixo
+    if(selectedInstitutes.length > 0 || selectedResearchers.length > 0){
+      
+        //Se os dois estiverem marcados para selecionar todos, não é necessário entrar em condição também
+        if(!(selectedInstitutes.includes("all") && selectedResearchers.includes("all"))){
+
+            //Aqui elimina-se as combinações [all com vazio] e [vazio com all], que seriam equivalentes a selecionar todos.
+            if(!(selectedInstitutes.includes("all") && !selectedResearchers.length > 0) && !(!selectedInstitutes.length>0 && selectedResearchers.includes("all"))){
+
+                //Se os pesquisadores não estiverem marcados como "todos" e tiverem alguma seleção eles entrão nessa condição
+                if(!selectedResearchers.includes("all") && selectedResearchers.length>0){
+                    data = selectedResearchers
+                      ;
+                }
+
+                //Se os institutos não estiverem marcados como todos ao mesmo tempo que os pesquisadores estão vazio, a condição será a seguinte:
+                else if(!selectedInstitutes.includes("all") && selectedInstitutes.length>0){
+                    data = this.state.researchers.filter((researcher) => selectedInstitutes.includes(researcher.institute.id)).map((researcher) => researcher.id)
+                    ;
+                }
+
+            }
+        }
     }
 
+    let requestOptions = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+
+    if(data){
+      requestOptions.body=JSON.stringify(data);
+      fetch(url, requestOptions)
+        .then((response) => response.json())
+        .then((json) => {
+          this.setState({lastPage: Number(json.totalPages) - 1});
+          var data = {
+            productionItems: json.content,
+            pageable: json.pageable,
+            totalElements: json.totalElements,
+            numberOfElements: json.numberOfElements
+          };
+          return data
+        })
+        .then((data) => {
+          this.setState({ productionItems: data.productionItems });
+          this.setState({ currentPage: Number(data.pageable.pageNumber) });
+          this.setState({ currentOffset: Number(data.pageable.offset)});
+          this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
+        })
+        .catch(e => { this.clearPagination() })
+    }
+      
+
     fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        this.setState({lastPage: Number(json.totalPages) - 1});
-        var data = {
-          productionItems: json.content,
-          pageable: json.pageable,
-          totalElements: json.totalElements,
-          numberOfElements: json.numberOfElements
-        };
-        return data
-      })
-      .then((data) => {
-        this.setState({ productionItems: data.productionItems });
-        this.setState({ currentPage: Number(data.pageable.pageNumber) });
-        this.setState({ currentOffset: Number(data.pageable.offset)});
-        this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
-      })
-      .catch(e => { this.clearPagination() })
+    .then((response) => response.json())
+    .then((json) => {
+      this.setState({lastPage: Number(json.totalPages) - 1});
+      var data = {
+        productionItems: json.content,
+        pageable: json.pageable,
+        totalElements: json.totalElements,
+        numberOfElements: json.numberOfElements
+      };
+      return data
+    })
+    .then((data) => {
+      this.setState({ productionItems: data.productionItems });
+      this.setState({ currentPage: Number(data.pageable.pageNumber) });
+      this.setState({ currentOffset: Number(data.pageable.offset)});
+      this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
+    })
+    .catch(e => { this.clearPagination() })
   }
 
   fillOrSearch = () => {
@@ -271,25 +384,35 @@ export default class ItensProducao extends Component {
           <div className="row justify-content-center">
             <div className="col-md-4">
               <label htmlFor="searchComboInstitute" className="form-label">Instituto</label>
-              <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboInstitute" onChange={this.searchComboInstituteChange}>
+              {/* <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboInstitute" onChange={this.searchComboInstituteChange}>
                 <option value="all">Todos</option>
                 {(this.state.institutes && this.state.institutes.length > 0) &&
                   (this.state.institutes.map((institute) => {
                     return <option key={institute.id} value={institute.id}>{institute.name}
                     </option>
                   }))}
-              </select>
+              </select> */}
+              <Select id="searchComboInstitute" closeMenuOnSelect={false} components={animatedComponents} isMulti 
+                options={[{ value: 'all', label: 'Todos' }, ...this.state.institutes.length>0 ? this.state.institutes.map(institute => ({value: institute.id, label: institute.name})) : []]}
+                value={this.state.selectedInstitutes} onChange={this.searchComboInstituteChange}
+                placeholder="Selecione institutos..." styles={this.destacarOpcaoTodos}
+              />
             </div>
             <div className="col-md-4">
               <label htmlFor="searchComboResearcher" className="form-label">Pesquisador</label>
-              <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboResearcher" onChange={this.searchComboResearcherChange}>
+              <Select id="searchComboResearcher" closeMenuOnSelect={false} components={animatedComponents} isMulti 
+                  options={[{ value: 'all', label: 'Todos' }, ...this.state.researchers.length>0? this.state.researchers.map(researcher => ({value: researcher.id, label: researcher.name})) : []]}
+                  value={this.state.selectedResearchers} onChange={this.searchComboResearcherChange}
+                  placeholder="Selecione pesquisadores..." styles={this.destacarOpcaoTodos}
+              />
+              {/* <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboResearcher" onChange={this.searchComboResearcherChange}>
                 <option value="all">Todos</option>
                 {(this.state.researchers && this.state.researchers.length > 0) &&
                   (this.state.researchers.map((researcher) => {
                     return <option key={researcher.id} value={researcher.id}>{researcher.name}
                     </option>
                   }))}
-              </select>
+              </select> */}
             </div>
             <div className="col-md-4">
               <label htmlFor="searchComboProductionType" className="form-label">Tipo Prod</label>
