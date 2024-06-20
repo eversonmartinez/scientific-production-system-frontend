@@ -84,24 +84,6 @@ export default class GraphGenerator extends Component {
             }
         }
 
-        // if(data){
-        //     const requestOptions = {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify(data)
-        //     };
-
-        //     console.log(url)
-        //     fetch(url, requestOptions)
-        //         .then((response) => response.json())
-        //         .then((json) => json.data())
-        //         .then((data) => {
-        //             return data;
-        //         })
-        // }
-
         let requestOptions = {
                     method: 'POST',
                     headers: {
@@ -114,14 +96,6 @@ export default class GraphGenerator extends Component {
 
          return fetch(url, requestOptions)
                 .then((response) => response.json())
-        
-        //else:
-
-        // return fetch(url)
-        //     .then((response) => 
-        //         response.json()
-        //     )
-        
     }
     
     transformGraphData = (graphData) => {
@@ -149,14 +123,11 @@ export default class GraphGenerator extends Component {
 
         this.setState({graphData: this.transformGraphData(graphData)});
 
-        //const newGraphData = this.transformGraphData(this.graphData);
-
         if(this.state.showGraph)
             this.setState({showGraph: false}, () => this.setState({showGraph: true}));
         else  
             this.setState({showGraph: true});
         
-        //this.graphData = newGraphData;
     }
 
     getCompleteSelectedResearcher = (selectedResearcher) => {
@@ -195,7 +166,6 @@ export default class GraphGenerator extends Component {
     }
 
     searchComboInstitutesChange = async (selectedOptions) => {
-        // const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
     
         const selectedValues = selectedOptions.map(option => option.value);
 
@@ -219,15 +189,6 @@ export default class GraphGenerator extends Component {
     }
 
     searchComboResearchersChange = (selectedOptions) => {
-        // const selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
-        // this.setState({ selectedResearchers: selectedOptions });
-        // //this.setState({ selectedResearcher: event.target.options[event.target.selectedIndex].value })
-
-        // if (selectedOptions.includes("all")) {
-        //     this.setState({ selectedResearchers: ["all"] });
-        // } else {
-        //     this.setState({ selectedResearchers: selectedOptions.filter(value => value !== "all") });
-        // }
 
         const selectedValues = selectedOptions.map(option => option.value);
 
@@ -311,12 +272,6 @@ export default class GraphGenerator extends Component {
                 <div className="row mb-3">
                     <div className="col-md-6 d-flex align-items-center">
                         <label htmlFor="comboInstitutes" className="form-label me-4">Institutos:</label>
-                        {/* <select className="form-select" id="comboInstitutes" defaultValue="all" value={this.state.selectedInstitutes} onChange={this.searchComboInstitutesChange} multiple>
-                            <option value="all">Todos</option>
-                            {(this.state.institutes != null) && (this.state.institutes.length > 0) && this.state.institutes.map((institute) => 
-                            {return <option key={institute.id} value={institute.id}>{institute.name}</option>})
-                            }
-                        </select> */}
                         <Select id="comboInstitutes" closeMenuOnSelect={false} components={animatedComponents} isMulti 
                             options={[{ value: 'all', label: 'Todos' }, ...this.state.researchers.length>0 ? this.state.institutes.map(institute => ({value: institute.id, label: institute.name})) : []]}
                             value={this.state.selectedInstitutes} onChange={this.searchComboInstitutesChange}
@@ -335,12 +290,6 @@ export default class GraphGenerator extends Component {
                 <div className="row mb-3">
                     <div className="col-md-6 d-flex align-items-center">
                         <label htmlFor="comboResearchers" className="form-label me-2">Pesquisador:</label>
-                        {/* <select className="form-select" id="comboResearchers" defaultValue="all" value={this.state.selectedResearchers} onChange={this.searchComboResearchersChange} multiple>
-                            <option value="all">Todos</option>
-                            {(this.state.researchers != null) && (this.state.researchers.length > 0) && (this.state.researchers.map((researcher) => {
-                                return <option key={researcher.id} value={researcher.id}>{researcher.name}</option>
-                            }))}
-                        </select> */}
                         <Select id="comboResearchers" closeMenuOnSelect={false} components={animatedComponents} isMulti 
                             options={[{ value: 'all', label: 'Todos' }, ...this.state.researchers.length>0? this.state.researchers.map(researcher => ({value: researcher.id, label: researcher.name})) : []]}
                             value={this.state.selectedResearchers} onChange={this.searchComboResearchersChange}
@@ -454,9 +403,6 @@ export default class GraphGenerator extends Component {
                                 color: 'black',
                                 "font-size": 10,
                                 "text-rotation": "autorotate",
-                                // "line-color": "#6774cb",
-                                //"line-color": "#AAD8FF",
-                                //"target-arrow-color": "#6774cb",
                                 "curve-style": "bezier"
                                 }
                             },
