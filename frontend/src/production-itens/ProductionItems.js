@@ -57,7 +57,7 @@ export default class ItensProducao extends Component {
     const filteredResearchers = this.state.researchers.filter((researcher) => institutes.includes(researcher.institute.id));
     const filteredSelectedResearchers = this.state.selectedResearchers.filter((researcher) => researcher.value==="all"||institutes.includes(this.getCompleteSelectedResearcher(researcher).institute.id)?true: false);
     this.setState({researchers: filteredResearchers, selectedResearchers: filteredSelectedResearchers});
-}
+  }
 
   searchComboInstituteChange = async (selectedOptions) => {
     //this.setState({ selectedInstituteId: event.target.options[event.target.selectedIndex].value });
@@ -121,8 +121,16 @@ export default class ItensProducao extends Component {
   }
 
   fillList = () => {
+
+    let requestOptions = {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      }
+    };
+
     const url = `${window.server}/work/search?page=${this.state.currentPage}&limit=100`;
-    fetch(url)
+    fetch(url, requestOptions)
       .then((response) => response.json())
       .then((json) => {
         this.setState({ lastPage: Number(json.totalPages) - 1});
@@ -141,6 +149,10 @@ export default class ItensProducao extends Component {
         this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
       })
       .catch(e => { this.clearPagination() })
+  }
+
+  getCompleteSelectedResearcher = (selectedResearcher) => {
+    return this.state.researchers.find((researcher) => researcher.id === selectedResearcher.value)
   }
 
   fillInstitutesCombo = () => {
@@ -181,7 +193,6 @@ export default class ItensProducao extends Component {
     let selectedInstitutes = this.state.selectedInstitutes.map((selected) => selected.value?selected.value:selected)
     let selectedResearchers = this.state.selectedResearchers.map((selected) => selected.value?selected.value:selected)
 
-    //TODO: Descomentar o trecho abaixo para a pesquisa filtrada por pesquisador funcionar
     //Se não tiverem nem institutos nem pesquisadores selecionados, entende-se que a seleção será de todos. Por isso, não entrará em nenhuma condição de filtro abaixo
     if(selectedInstitutes.length > 0 || selectedResearchers.length > 0){
       
@@ -208,62 +219,35 @@ export default class ItensProducao extends Component {
     }
 
     let requestOptions = {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            };
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    };
 
-    if(data){
+    if(data)
       requestOptions.body=JSON.stringify(data);
-      fetch(url, requestOptions)
-        .then((response) => response.json())
-        .then((json) => {
-          this.setState({lastPage: Number(json.totalPages) - 1});
-          var data = {
-            productionItems: json.content,
-            pageable: json.pageable,
-            totalElements: json.totalElements,
-            numberOfElements: json.numberOfElements
-          };
-          return data
-        })
-        .then((data) => {
-          this.setState({ productionItems: data.productionItems });
-          this.setState({ currentPage: Number(data.pageable.pageNumber) });
-          this.setState({ currentOffset: Number(data.pageable.offset)});
-          this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
-        })
-        .catch(e => { this.clearPagination() })
-    }
-      
 
-    fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
-      this.setState({lastPage: Number(json.totalPages) - 1});
-      var data = {
-        productionItems: json.content,
-        pageable: json.pageable,
-        totalElements: json.totalElements,
-        numberOfElements: json.numberOfElements
-      };
-      return data
-    })
-    .then((data) => {
-      this.setState({ productionItems: data.productionItems });
-      this.setState({ currentPage: Number(data.pageable.pageNumber) });
-      this.setState({ currentOffset: Number(data.pageable.offset)});
-      this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
-    })
-    .catch(e => { this.clearPagination() })
-  }
-
-  fillOrSearch = () => {
-    if (this.state.searchTerm)
-      this.search();
-    else
-      this.fillList();
+    fetch(url, requestOptions)
+      .then((response) => response.json())
+      .then((json) => {
+        this.setState({lastPage: Number(json.totalPages) - 1});
+        var data = {
+          productionItems: json.content,
+          pageable: json.pageable,
+          totalElements: json.totalElements,
+          numberOfElements: json.numberOfElements
+        };
+        return data
+      })
+      .then((data) => {
+        this.setState({ productionItems: data.productionItems });
+        this.setState({ currentPage: Number(data.pageable.pageNumber) });
+        this.setState({ currentOffset: Number(data.pageable.offset)});
+        this.setState({ totalItens: data.totalElements, displayedItens: Number(data.numberOfElements) });
+      })
+      .catch(e => { this.clearPagination() })
+    
   }
 
   clearState = () => {

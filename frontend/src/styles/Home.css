@@ -2,3 +2,11 @@
     background: url('../resources/calendar.svg') no-repeat right;
     background-size: 20px;
 }
+
+.link-cards:hover{
+    transform: scale(1.05);
+    filter: brightness(1.1);
+    transition: ease-out;
+    transition-duration: 0.7s;
+    cursor: pointer;
+}
