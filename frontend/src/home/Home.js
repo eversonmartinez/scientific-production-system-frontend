@@ -56,7 +56,7 @@ export default class Home extends Component {
 
   state = {
     id: "",
-    startDate: new Date(1980, 2, 5, 0, 0, 0),
+    startDate: new Date(2000, 2, 5, 0, 0, 0),
     endDate: new Date(2024, 2, 5, 0, 0, 0),
     researchers: [],
     institutes: [],
@@ -66,7 +66,10 @@ export default class Home extends Component {
     totalBooks: 0,
     selectedInstitutes: [],
     selectedResearchers: [],
-    labelsBar: []
+    labelsBar: [],
+    totalWorksByYear: [],
+    productionItems: [],
+    productionType: "all"
   }
 
   destacarOpcaoTodos  = {
@@ -201,8 +204,39 @@ export default class Home extends Component {
     })
   }
 
+  worksOnYear = (date) => {
+    const foundWorks = this.state.productionItems.filter((work) => work.details.includes(date));
+    return {works: foundWorks, total: foundWorks.length}
+  }
+
+  setLabelsBar = async () => {
+    let labels = [];
+    let startDate = new Date(this.state.startDate);
+    const endDate = this.state.endDate;
+
+    await this.setState({totalWorksByYear: []})
+
+    let totalWorksByYear = this.state.totalWorksByYear;
+
+    while(startDate <= endDate){
+      
+      //labels.push(startDate.getFullYear());
+      const worksOnYear = this.worksOnYear(startDate.getFullYear());
+      totalWorksByYear.push({label: startDate.getFullYear(), works: worksOnYear.works, total: worksOnYear.total })
+      startDate.setFullYear(startDate.getFullYear() + 1)
+
+    }
+    this.setState({labelsBar: labels});
+    
+    //this.setState({totalWorksByYear: totalWorksByYear}, () => console.log(this.state.totalWorksByYear))
+  }
+
+  arrangeWorks = () => {
+
+  }
+
   search = () => {
-    let url = `${window.server}/work/search?page=${this.state.currentPage}&limit=${this.state.itensPerPage}&startYear=${this.state.startDate.getFullYear()}&endYear=${this.state.endDate.getFullYear()}&type=${this.state.productionType}`;
+    let url = `${window.server}/work/search?limit=2000&startYear=${this.state.startDate.getFullYear()}&endYear=${this.state.endDate.getFullYear()}&type=${this.state.productionType}`;
 
     let data;
 
@@ -255,7 +289,7 @@ export default class Home extends Component {
         return data
       })
       .then((data) => {
-        this.setState({ productionItems: data.productionItems });
+        this.setState({ productionItems: data.productionItems }, () => this.setLabelsBar());
         this.setState({ totalItens: data.totalElements});
       })
       .catch(e => { console.log(e) })
@@ -263,27 +297,17 @@ export default class Home extends Component {
   }
 
   applyButtonClicked = () => {
-    this.clearPagination();
     this.search();
-  }
-
-  setLabelsBar = () => {
-    let labels = [];
-    let startDate = this.state.startDate;
-    const endDate = this.state.endDate;
-    while(startDate <= endDate){
-      labels.push(startDate.getFullYear());
-      startDate.setFullYear(startDate.getFullYear() + 1)
-    }
-    this.setState({labelsBar: labels})
   }
 
   componentDidMount () {
     this.getTotalCounts();  
     this.fillInstitutesCombo();
     this.fillResearchersCombo();
-    this.setLabelsBar();
+    this.search();
+    //this.setLabelsBar();
   }
+
 
   render() {
 
@@ -308,11 +332,12 @@ export default class Home extends Component {
 
   //const labelsBar = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   const dataBar = {
-  datasets: [
+    labels:  this.state.totalWorksByYear.map((workYear) => workYear.label),
+    datasets: [
     {
       label: 'Trabalhos produzidos',
-      data: this.state.labelsBar.map(() => [49, 50, 12, 14, 204, 135, 938]),
-      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      data: this.state.totalWorksByYear.map((workYear) => workYear.total),
+      backgroundColor: 'rgba(54, 162, 235, 1)'
     }
   ],
 };
@@ -337,7 +362,7 @@ export default class Home extends Component {
             <DatePicker id="searchDatePickerEndDate" className="form-control custom-date-picker" selected={this.state.endDate} onChange={this.searchDatePickerEndDateChange} dateFormat="yyyy" showYearPicker />
           </div>
           <div className="col-md-4 ">
-            <button type="button" className="btn btn-primary mt-4 w-50 fw-bold border border-info shadow">Aplicar</button>
+            <button type="button" className="btn btn-primary mt-4 w-50 fw-bold border border-info shadow" onClick={this.applyButtonClicked}>Aplicar</button>
           </div>
         </div>
 
@@ -374,12 +399,12 @@ export default class Home extends Component {
           <div className="col d-flex justify-content-center">
             <div className='border border-secondary  w-75' style={{height: "600px"}}>
               <Bar
+                data={dataBar}
                 options={{
                   responsive: true, 
-                  
-                  plugins: {legend: {display: false},title: {display: true,text: 'Trabalhos'},},
+                  plugins: {legend: {display: false}, title: {display: true,text: 'Trabalhos'},},
                 }}
-                data={dataBar} >
+                 >
               </Bar>
             </div>
           </div>
