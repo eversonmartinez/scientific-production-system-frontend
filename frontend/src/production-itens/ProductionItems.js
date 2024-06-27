@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import '../styles/ProductionItem.css';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import Select from 'react-select'
-import makeAnimated from 'react-select/animated'
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+import { withLocation } from '../HOC/withLocation';
+
 const animatedComponents = makeAnimated();
 
-export default class ItensProducao extends Component {
+class ItensProducao extends Component {
 
   state = {
     id: "",
@@ -305,10 +307,49 @@ export default class ItensProducao extends Component {
     this.setState({ itensPerPage: event.target.options[event.target.selectedIndex].value }, () => this.search());
   }
 
-  componentDidMount() {
-    this.fillList();
+  updateStateFromComing = async(newState) => {
+    let updated = false;
+
+    if(newState.selectedResearchers){
+      this.setState({ selectedResearchers: newState.selectedResearchers });
+      updated = true;
+    }
+    if(newState.selectedInstitutes){
+      this.setState({ selectedInstitutes: newState.selectedInstitutes });
+      updated = true;
+    }
+    if(newState.productionType){
+      this.setState({ productionType: newState.productionType});
+      updated = true;
+    }
+    if(newState.year){
+      this.setState({ startDate: new Date(newState.year, 0, 1), endDate: new Date(newState.year, 11, 30)});
+      updated = true;
+    }
+
+    return updated;
+  }
+
+  componentDidMount() {    
     this.fillInstitutesCombo();
     this.fillResearchersCombo();
+    const location = this.props.location;
+    
+    if(location.state){
+      const end = this.updateStateFromComing(location.state).then(
+        (result) => {
+          if (result) { 
+            this.search(); 
+            return result;
+          }
+        }
+      );
+
+      if(end)
+        return;
+    }
+
+    this.fillList();
   }
 
   render() {
@@ -400,7 +441,7 @@ export default class ItensProducao extends Component {
             </div>
             <div className="col-md-4">
               <label htmlFor="searchComboProductionType" className="form-label">Tipo Prod</label>
-              <select className="form-select" arial-label="Combo for search field" defaultValue="all" id="searchComboProductionType" onChange={this.searchComboProductionTypeChange}>
+              <select className="form-select" arial-label="Combo for search field" id="searchComboProductionType" onChange={this.searchComboProductionTypeChange} value={this.state.productionType}>
                 <option value="all">Todos</option>
                 <option value="article">Artigos pub.</option>
                 <option value="book">Livros pub.</option>
@@ -469,3 +510,5 @@ export default class ItensProducao extends Component {
     )
   }
 }
+
+export default withLocation(ItensProducao);

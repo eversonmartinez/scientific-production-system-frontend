@@ -7,7 +7,9 @@ import '../styles/Home.css';
 import { Chart as ChartJS, ArcElement, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, } from "chart.js";
 import { Bar } from 'react-chartjs-2';
 import { Pie } from 'react-chartjs-2';
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { withRouter } from '../HOC/withRouter';
 
 ChartJS.register(
   ArcElement,
@@ -21,43 +23,12 @@ ChartJS.register(
 
 const animatedComponents = makeAnimated();
 
-// const options = {
-//   responsive: true,
-//   scales: {
-//     yAxes: [{
-//         ticks: {
-//             beginAtZero: true
-//         }
-//     }]
-//   },
-//   plugins: {
-//     legend: {
-//       display: false
-//     },
-//     title: {
-//       display: true,
-//       text: 'Trabalhos',
-//     },
-//   },
-// };
-// const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-// const data = {
-//   labels,
-//   datasets: [
-//     {
-//       label: 'Trabalhos produzidos',
-//       data: labels.map(() => [49, 50, 12, 14, 204, 135, 938]),
-//       backgroundColor: 'rgba(255, 99, 132, 0.5)',
-//     }
-//   ],
-// };
-
-export default class Home extends Component {
+class Home extends Component {
 
   state = {
     id: "",
-    startDate: new Date(2000, 2, 5, 0, 0, 0),
-    endDate: new Date(2024, 2, 5, 0, 0, 0),
+    startDate: new Date(2000, 0, 1, 0, 0, 0),
+    endDate: new Date(2024, 11, 30, 0, 0, 0),
     researchers: [],
     institutes: [],
     totalInstitutes: 0,
@@ -66,7 +37,6 @@ export default class Home extends Component {
     totalBooks: 0,
     selectedInstitutes: [],
     selectedResearchers: [],
-    labelsBar: [],
     totalWorksByYear: [],
     productionItems: [],
     productionType: "all"
@@ -128,10 +98,29 @@ export default class Home extends Component {
   }
 
   searchDatePickerStartDateChange = (date) => {
+    if(date.getFullYear() > this.state.endDate.getFullYear())
+      this.setState({endDate: new Date(date)});
+
+    if(this.state.endDate.getFullYear() - date.getFullYear() > 150){
+      let newEndDate = new Date(date);
+      newEndDate.setFullYear(date.getFullYear() + 150);
+      this.setState({endDate: newEndDate})
+    }
+
     this.setState({ startDate: date });
   }
 
   searchDatePickerEndDateChange = (date) => {
+    if(date.getFullYear() < this.state.startDate.getFullYear())
+      this.setState({startDate: new Date(date)});
+
+    if(date.getFullYear() - this.state.startDate.getFullYear() > 150){
+      let newStartDate = new Date(date);
+      newStartDate.setFullYear(date.getFullYear() - 150);
+      this.setState({startDate: newStartDate})
+    }
+
+
     this.setState({ endDate: date });
   }
 
@@ -205,18 +194,21 @@ export default class Home extends Component {
   }
 
   worksOnYear = (date) => {
+    if(!this.state.productionItems || this.state.productionItems.length === 0)
+      return {works: 0, total: 0}
+    
     const foundWorks = this.state.productionItems.filter((work) => work.details.includes(date));
     return {works: foundWorks, total: foundWorks.length}
   }
 
-  setLabelsBar = async () => {
-    let labels = [];
+  setLabelsBar = () => {
+    //let labels = [];
     let startDate = new Date(this.state.startDate);
     const endDate = this.state.endDate;
 
-    await this.setState({totalWorksByYear: []})
+    //await this.setState({totalWorksByYear: []})
 
-    let totalWorksByYear = this.state.totalWorksByYear;
+    let totalWorksByYear = [];
 
     while(startDate <= endDate){
       
@@ -226,7 +218,7 @@ export default class Home extends Component {
       startDate.setFullYear(startDate.getFullYear() + 1)
 
     }
-    this.setState({labelsBar: labels});
+    this.setState({totalWorksByYear: totalWorksByYear});
     
     //this.setState({totalWorksByYear: totalWorksByYear}, () => console.log(this.state.totalWorksByYear))
   }
@@ -289,8 +281,7 @@ export default class Home extends Component {
         return data
       })
       .then((data) => {
-        this.setState({ productionItems: data.productionItems }, () => this.setLabelsBar());
-        this.setState({ totalItens: data.totalElements});
+        this.setState({ productionItems: data.productionItems, totalItens: data.totalElements }, () => this.setLabelsBar());
       })
       .catch(e => { console.log(e) })
     
@@ -299,6 +290,34 @@ export default class Home extends Component {
   applyButtonClicked = () => {
     this.search();
   }
+
+  handleBarClick = (elements) => {
+    if (elements.length > 0) {
+      const index = elements[0].index;
+      const year = this.state.totalWorksByYear[index].label;
+
+      // useNavigate({
+      //   //pathname: '/itensProducao/${year}',
+      //   pathname: '/itensProducao',
+      //   state: { selectedResearchers: this.state.selectedResearchers, selectedInstitutes: this.state.selectedInstitutes}
+      // })
+      
+       this.props.navigate(
+         "/itensProducao",
+         { state: { selectedResearchers: this.state.selectedResearchers, selectedInstitutes: this.state.selectedInstitutes, productionType: this.state.productionType, year: year } }
+       );
+      //   {state: { selectedResearchers: this.state.selectedResearchers, selectedInstitutes: this.state.selectedInstitutes}}
+       //)
+      
+      //})
+      // this.navigate({
+      //   pathname: '/itensProducao/${year}',
+      //   state: { selectedResearchers: this.state.selectedResearchers, selectedInstitutes: this.state.selectedInstitutes}
+      // })
+      //const month = 5; // Exemplo de valor de mês
+      //this.props.history.push(`/details/${year}/${month}`);
+    }
+  };
 
   componentDidMount () {
     this.getTotalCounts();  
@@ -355,11 +374,13 @@ export default class Home extends Component {
         <div className="row mb-3 ">
           <div className="col-md-4">
             <label htmlFor="searchDatePickerStartDate" className="form-label d-block">Data início</label>
-            <DatePicker id="searchDatePickerStartDate" className="form-control custom-date-picker" selected={this.state.startDate} onChange={this.searchDatePickerStartDateChange} dateFormat="yyyy" showYearPicker />
+            <DatePicker id="searchDatePickerStartDate" className="form-control custom-date-picker" selected={this.state.startDate} onChange={this.searchDatePickerStartDateChange} dateFormat="yyyy" showYearPicker/>
           </div>
           <div className="col-md-4">
             <label htmlFor="searchComboEndDate" className="form-label d-block">Data fim</label>
-            <DatePicker id="searchDatePickerEndDate" className="form-control custom-date-picker" selected={this.state.endDate} onChange={this.searchDatePickerEndDateChange} dateFormat="yyyy" showYearPicker />
+            <DatePicker id="searchDatePickerEndDate" className="form-control custom-date-picker" selected={this.state.endDate} onChange={this.searchDatePickerEndDateChange} dateFormat="yyyy" showYearPicker/>
+            <i className="bi bi-info-circle-fill m-2" data-tooltip-id="end-date" data-tooltip-content="O intervalo máximo entre as datas é de 150 anos"/>
+            <ReactTooltip place="top" type="dark" effect="solid" id="end-date"/>
           </div>
           <div className="col-md-4 ">
             <button type="button" className="btn btn-primary mt-4 w-50 fw-bold border border-info shadow" onClick={this.applyButtonClicked}>Aplicar</button>
@@ -403,6 +424,7 @@ export default class Home extends Component {
                 options={{
                   responsive: true, 
                   plugins: {legend: {display: false}, title: {display: true,text: 'Trabalhos'},},
+                  onClick: (event, elements) => this.handleBarClick(elements),
                 }}
                  >
               </Bar>
@@ -454,3 +476,5 @@ export default class Home extends Component {
     );
   }
 }
+
+export default withRouter(Home);
