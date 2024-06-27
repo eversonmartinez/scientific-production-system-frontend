@@ -58,7 +58,6 @@ export default class GraphGenerator extends Component {
         let selectedInstitutes = this.state.selectedInstitutes.map((selected) => selected.value?selected.value:selected)
         let selectedResearchers = this.state.selectedResearchers.map((selected) => selected.value?selected.value:selected)
 
-        //TODO: Descomentar o trecho abaixo para a pesquisa filtrada por pesquisador funcionar
         //Se não tiverem nem institutos nem pesquisadores selecionados, entende-se que a seleção será de todos. Por isso, não entrará em nenhuma condição de filtro abaixo
         if(selectedInstitutes.length > 0 || selectedResearchers.length > 0){
          
